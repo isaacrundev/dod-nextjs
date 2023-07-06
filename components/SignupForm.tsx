@@ -34,7 +34,14 @@ const SignupForm = () => {
     defaultValues: { email: "", password: "", confirmPassword: "" },
   });
 
-  const onSubmit = (data: FormInputs) => console.log(data);
+  const onSubmit = (data: FormInputs) => {
+    fetch("/api/user", {
+      method: "POST",
+      mode: "cors",
+      body: JSON.stringify(data),
+    });
+    // console.log(data);
+  };
 
   return (
     <>
