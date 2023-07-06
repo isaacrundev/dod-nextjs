@@ -23,7 +23,7 @@ const NavBar = () => {
               Home
             </NavigationMenuLink>
           </Link>
-          <Link href="/food-search" legacyBehavior passHref>
+          <Link href="/food-data" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Food Data Preview
             </NavigationMenuLink>
