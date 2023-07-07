@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useEffect, useState } from "react";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +16,6 @@ import {
 const FoodDataPage = () => {
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
-  const [searchResult, setSearchResult] = useState();
   const [data, setData] = useState();
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
@@ -53,7 +53,7 @@ const FoodDataPage = () => {
       <div className="flex flex-col gap-5">
         {data ? (
           data.products.map((item) => (
-            <Card key={item.code}>
+            <Card key={item.code} className="flex justify-between">
               <CardHeader>
                 <CardTitle>
                   {item.product_name ? item.product_name : item.product_name_fr}
@@ -66,6 +66,18 @@ const FoodDataPage = () => {
               <CardFooter>
                 <p>Card Footer</p>
               </CardFooter>
+              <Image
+                src={item.image_small_url}
+                width="100"
+                height="100"
+                alt={
+                  item.product_name
+                    ? `${item.product_name} (No Image)`
+                    : "No Image"
+                }
+                loading="lazy"
+                style={{ objectFit: "contain" }}
+              />
             </Card>
           ))
         ) : (
