@@ -17,11 +17,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <header>
-          <nav className="flex flex-row justify-center my-5">
+          <nav className="flex flex-row justify-center my-5 ">
             <NavBar />
           </nav>
         </header>
-        <main className="px-10 ">{children}</main>
+        <main className="container">{children}</main>
       </body>
     </html>
   );
