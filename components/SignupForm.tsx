@@ -34,12 +34,19 @@ const SignupForm = () => {
     defaultValues: { email: "", password: "", confirmPassword: "" },
   });
 
-  const onSubmit = (data: FormInputs) => {
-    fetch("/api/user", {
-      method: "POST",
-      mode: "cors",
-      body: JSON.stringify(data),
-    });
+  const onSubmit = async (data: FormInputs) => {
+    try {
+      const res = await fetch("/api/user", {
+        method: "POST",
+        mode: "cors",
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+
     // console.log(data);
   };
 

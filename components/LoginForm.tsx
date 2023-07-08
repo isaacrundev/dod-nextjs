@@ -27,7 +27,21 @@ const LoginForm = () => {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = (data: FormInputs) => console.log(data);
+  const onSubmit = async (data: FormInputs) => {
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        mode: "cors",
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+
+    // console.log(data);
+  };
 
   return (
     <>
