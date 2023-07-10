@@ -29,13 +29,13 @@ const LoginForm = () => {
 
   const onSubmit = async (data: FormInputs) => {
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
-        mode: "cors",
         body: JSON.stringify(data),
       });
       const result = await res.json();
       console.log(result);
+      console.log(data);
     } catch (error) {
       console.log(error);
     }

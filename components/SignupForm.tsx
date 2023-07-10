@@ -36,12 +36,16 @@ const SignupForm = () => {
 
   const onSubmit = async (data: FormInputs) => {
     try {
-      const res = await fetch("/api/user", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
-        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
       const result = await res.json();
+      console.log(data);
+
       console.log(result);
     } catch (error) {
       console.log(error);

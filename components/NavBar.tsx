@@ -15,30 +15,30 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 const NavBar = () => {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem className="space-x-3">
-          {session && session.user ? (
-            <>
-              <Link href="/dashboard" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Dashboard
-                </NavigationMenuLink>
-              </Link>
-              <Link href="/add-new" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Add New
-                </NavigationMenuLink>
-              </Link>
-              <Link href="/logout" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  LOG OUT
-                </NavigationMenuLink>
-              </Link>
-            </>
-          ) : (
+          {/* {session && session.user ? ( */}
+          <>
+            <Link href="/dashboard" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Dashboard
+              </NavigationMenuLink>
+            </Link>
+            <Link href="/add-new" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Add New
+              </NavigationMenuLink>
+            </Link>
+            <Link href="/logout" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                LOG OUT
+              </NavigationMenuLink>
+            </Link>
+          </>
+          {/* ) : (
             <>
               <Link href="/" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -56,7 +56,7 @@ const NavBar = () => {
                 </NavigationMenuLink>
               </Link>
             </>
-          )}
+          )} */}
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
