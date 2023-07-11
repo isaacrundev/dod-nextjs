@@ -1,5 +1,3 @@
-function loading() {
-  return <></>;
+export default function loading() {
+  return <p>Loading...</p>;
 }
-
-export default loading;

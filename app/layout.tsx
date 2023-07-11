@@ -16,16 +16,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      {/* <Providers> */}
-      <body className={inter.className}>
-        <header>
-          <nav className="flex flex-row justify-center my-5 ">
-            <NavBar />
-          </nav>
-        </header>
-        <main className="container">{children}</main>
-      </body>
-      {/* </Providers> */}
+      <Providers>
+        <body className={inter.className}>
+          <header>
+            <nav className="flex flex-row justify-center my-5 ">
+              <NavBar />
+            </nav>
+          </header>
+          <main className="container">{children}</main>
+        </body>
+      </Providers>
     </html>
   );
 }
