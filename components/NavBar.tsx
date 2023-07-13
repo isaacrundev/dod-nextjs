@@ -50,9 +50,9 @@ const NavBar = () => {
                   Food Data Preview
                 </NavigationMenuLink>
               </Link>
-              <Link href="/login" legacyBehavior passHref>
+              <Link href="/login-signup" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  LOGIN / SIGN UP
+                  LOGIN / SIGNUP
                 </NavigationMenuLink>
               </Link>
             </>

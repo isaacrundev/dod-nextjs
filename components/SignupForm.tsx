@@ -36,13 +36,16 @@ const SignupForm = () => {
 
   const onSubmit = async (data: FormInputs) => {
     try {
-      const res = await fetch("/api/users/signup", {
+      const res = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
+      if (res.ok) {
+        alert("Sign up Successfully!!");
+      }
       return res.json();
     } catch (error) {
       console.log(error);

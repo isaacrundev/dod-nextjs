@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
+import { signIn } from "next-auth/react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -29,13 +30,15 @@ const LoginForm = () => {
 
   const onSubmit = async (data: FormInputs) => {
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
-      console.log(result);
-      console.log(data);
+      // const res = await fetch("/api/auth/login", {
+      //   method: "POST",
+      //   body: JSON.stringify(data),
+      // });
+      // const result = await res.json();
+      const res = await signIn("credentials", { ...data, redirect: false });
+      if (res?.ok) {
+        alert("Login successfully!!");
+      }
     } catch (error) {
       console.log(error);
     }

@@ -13,10 +13,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+interface foodData {}
+
 const FoodDataPage = () => {
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
-  const [data, setData] = useState();
+  const [data, setData] = useState<foodData>();
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     try {
@@ -33,9 +35,9 @@ const FoodDataPage = () => {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
+  // useEffect(() => {
+  //   console.log(data);
+  // }, [data]);
 
   const handleClick = () => {
     getFoodData(input, page);
