@@ -11,16 +11,23 @@ import {
   NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const NavBar = () => {
   const { data: session } = useSession();
+  const router = useRouter();
+  const handleSignOut = async () => {
+    const res = await signOut({ redirect: false, callbackUrl: "/" });
+    alert("You've logged out successfully!!");
+    router.push(res.url);
+  };
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem className="space-x-3">
-          {session && session.user ? (
+          {session?.user ? (
             <>
               <Link href="/dashboard" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -32,11 +39,16 @@ const NavBar = () => {
                   Add New
                 </NavigationMenuLink>
               </Link>
-              <Link href="/logout" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  LOG OUT
-                </NavigationMenuLink>
-              </Link>
+              {/* <Link href="/logout" legacyBehavior passHref> */}
+              <NavigationMenuLink
+                className={
+                  navigationMenuTriggerStyle() + " hover:cursor-pointer"
+                }
+                onClick={handleSignOut}
+              >
+                LOG OUT
+              </NavigationMenuLink>
+              {/* </Link> */}
             </>
           ) : (
             <>

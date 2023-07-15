@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -25,6 +26,7 @@ type FormInputs = {
 };
 
 const SignupForm = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -45,6 +47,7 @@ const SignupForm = () => {
       });
       if (res.ok) {
         alert("Sign up Successfully!!");
+        router.push("/dashboard");
       }
       return res.json();
     } catch (error) {

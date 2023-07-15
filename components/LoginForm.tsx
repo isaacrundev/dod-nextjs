@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -19,6 +20,7 @@ type FormInputs = {
 };
 
 const LoginForm = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -29,21 +31,19 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: FormInputs) => {
-    try {
-      // const res = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   body: JSON.stringify(data),
-      // });
-      // const result = await res.json();
-      const res = await signIn("credentials", { ...data, redirect: false });
-      if (res?.ok) {
-        alert("Login successfully!!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    // const res = await fetch("/api/auth/login", {
+    //   method: "POST",
+    //   body: JSON.stringify(data),
+    // });
+    // const result = await res.json();
+    const res = await signIn("credentials", { ...data, redirect: false });
 
-    // console.log(data);
+    if (res?.error) {
+      alert(res.error);
+    } else {
+      alert("Login successfully!!");
+      router.push("/dashboard");
+    }
   };
 
   return (
