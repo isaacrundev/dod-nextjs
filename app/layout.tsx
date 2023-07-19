@@ -2,6 +2,7 @@ import NavBar from "@/components/NavBar";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import Providers from "@/components/Providers";
+import { Separator } from "@/components/ui/separator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,8 +19,8 @@ export default function RootLayout({
     <html lang="en">
       <Providers>
         <body className={inter.className}>
-          <header>
-            <nav className="flex flex-row justify-center my-5 ">
+          <header className="flex items-center justify-center shadow-sm">
+            <nav className="my-2">
               <NavBar />
             </nav>
           </header>

@@ -9,6 +9,7 @@ interface Input {
 import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Button } from "./ui/button";
 
 export default function AddNewForm() {
   const {
@@ -19,19 +20,20 @@ export default function AddNewForm() {
 
   return (
     <>
-      <div>
+      <div className="flex flex-col max-w-xs gap-3">
         <div>
           <Label>Protein</Label>
-          <Input {...register("protein")} />
+          <Input type="number" {...register("protein")} />
         </div>
         <div>
           <Label>Fats</Label>
-          <Input {...register("fats")} />
+          <Input type="number" {...register("fats")} />
         </div>
         <div>
           <Label>Carbs</Label>
-          <Input {...register("carbs")} />
+          <Input type="number" {...register("carbs")} />
         </div>
+        <Button>Save</Button>
       </div>
     </>
   );

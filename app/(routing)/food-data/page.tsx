@@ -13,7 +13,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-interface foodData {}
+interface Products {
+  _id: string;
+  product_name: string;
+  product_name_fr: string;
+  image_small_url: string;
+}
+
+interface foodData {
+  products: Products[];
+}
 
 const FoodDataPage = () => {
   const [input, setInput] = useState("");
@@ -55,7 +64,7 @@ const FoodDataPage = () => {
       <div className="flex flex-col gap-5">
         {data ? (
           data.products.map((item) => (
-            <Card key={item.code} className="flex justify-between">
+            <Card key={item._id} className="flex justify-between">
               <CardHeader>
                 <CardTitle>
                   {item.product_name ? item.product_name : item.product_name_fr}
