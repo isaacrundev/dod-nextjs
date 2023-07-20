@@ -24,7 +24,7 @@ export default function RootLayout({
               <NavBar />
             </nav>
           </header>
-          <main className="container">{children}</main>
+          <main className="container mt-8">{children}</main>
         </body>
       </Providers>
     </html>

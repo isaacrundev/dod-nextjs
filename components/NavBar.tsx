@@ -14,8 +14,11 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const NavBar = () => {
+  const [isLogin, setIsLogin] = useState(true);
+
   const { data: session } = useSession();
   const router = useRouter();
   const handleSignOut = async () => {
@@ -28,7 +31,8 @@ const NavBar = () => {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem className="space-x-3">
-            {session?.user ? (
+            {/* {session?.user ? ( */}
+            {isLogin ? (
               <>
                 <Link href="/dashboard" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>

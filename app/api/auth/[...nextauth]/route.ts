@@ -42,7 +42,7 @@ export const authOptions = {
           TargetUser.password
         );
         if (!passwordIsMatch) {
-          throw new Error("Incorrect password");
+          throw new Error('User/password');
         }
         return TargetUser;
       },
