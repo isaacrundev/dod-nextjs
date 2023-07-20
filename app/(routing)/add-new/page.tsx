@@ -5,15 +5,16 @@ type Props = {};
 
 export default function AddNewPage({}: Props) {
   return (
-    <div className="container flex justify-center">
-      <div className="space-y-3 ">
-        <p className="text-lg text-center">Add New</p>
+    <div className="container">
+      <div className="flex flex-col items-center justify-center space-y-3">
+        <div>
+          <p className="text-lg">Add New</p>
+        </div>
+        <p>Input Food Data</p>
+        <AddNewForm /> <p className="text-center text-md">Or...</p>
         <div>
           <Button>Choose from food data</Button>
         </div>
-        <p className="text-center text-md">Or...</p>
-        <p className="text-center">Custom Your Food Data</p>
-        <AddNewForm />
       </div>
     </div>
   );

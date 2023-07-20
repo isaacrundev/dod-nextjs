@@ -20,18 +20,22 @@ export default function AddNewForm() {
 
   return (
     <>
-      <div className="flex flex-col max-w-xs gap-3">
-        <div>
+      <div className="flex flex-col gap-3">
+        <div className="space-y-1">
           <Label>Protein</Label>
           <Input type="number" {...register("protein")} />
         </div>
-        <div>
+        <div className="space-y-1">
           <Label>Fats</Label>
           <Input type="number" {...register("fats")} />
         </div>
-        <div>
+        <div className="space-y-1">
           <Label>Carbs</Label>
           <Input type="number" {...register("carbs")} />
+        </div>
+        <div className="space-y-1">
+          <Label>Carolies</Label>
+          <Input type="number" {...register("Carolies")} />
         </div>
         <Button>Save</Button>
       </div>
