@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const NavBar = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  // const [isLogin, setIsLogin] = useState(false);
 
   const { data: session } = useSession();
   const router = useRouter();
@@ -32,7 +32,7 @@ const NavBar = () => {
         <NavigationMenuList>
           <NavigationMenuItem className="space-x-3">
             {/* {session?.user ? ( */}
-            {isLogin ? (
+            {session ? (
               <>
                 <Link href="/dashboard" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
