@@ -4,18 +4,27 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url  	= env("SUPABASE_URL")
+  url  	= env("DATABASE_URL")
 }
 
 model User {
   id       String   @id @default(uuid())
   email    String   @unique
-  tdee     Int?
-  name     String?  @unique
   password String
+  profile Profile?
   records  Record[]
 
   @@index([email])
+}
+
+model Profile {
+  id       String   @id @default(uuid())
+  userId String @unique
+  user User @relation(fields: [userId],references: [id])
+  tdee     Int?
+  name     String? 
+
+  @@index([id])
 }
 
 model Record {
@@ -24,6 +33,7 @@ model Record {
   carb       Float
   protein    Float
   fat        Float
+  calories   Float
   createAt   DateTime @default(now())
   updateAt   DateTime
   userId     String

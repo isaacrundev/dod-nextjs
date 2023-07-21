@@ -34,8 +34,8 @@ export default function AddNewForm() {
           <Input type="number" {...register("carbs")} />
         </div>
         <div className="space-y-1">
-          <Label>Carolies</Label>
-          <Input type="number" {...register("Carolies")} />
+          <Label>Calories</Label>
+          <Input type="number" {...register("calories")} />
         </div>
         <Button>Save</Button>
       </div>

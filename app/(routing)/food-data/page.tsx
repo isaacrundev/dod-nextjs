@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useSession } from "next-auth/react";
 
 interface Products {
   _id: string;
@@ -25,30 +26,34 @@ interface foodData {
 }
 
 const FoodDataPage = () => {
+  const { data: session } = useSession();
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<foodData>();
+  const [isLoading, setIsLoading] = useState(false);
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     try {
       const res = await fetch(
         `https://world.openfoodfacts.org/cgi/search.pl?action=process&json=true&search_terms=${searchTerm}&page=${currentPage}`
       );
-      const jsonData = await res.json();
-      setData(jsonData);
+      if (res.ok) {
+        const jsonData = await res.json();
+        setData(jsonData);
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
 
   const handleClick = () => {
+    setIsLoading(true);
     getFoodData(input, page);
   };
 
@@ -57,11 +62,13 @@ const FoodDataPage = () => {
       <h1>Food Search</h1>
       <div className="flex justify-center my-5">
         <div className="flex max-w-md gap-2">
-          <Input onChange={handleInputChange} />
-          <Button onClick={handleClick}>Search</Button>
+          <Input type="text" onChange={handleInputChange} />
+          <Button disabled={isLoading} onClick={handleClick}>
+            Search
+          </Button>
         </div>
       </div>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 sm:grid sm:grid-cols-3">
         {data ? (
           data.products.map((item) => (
             <Card key={item._id} className="flex justify-between">
