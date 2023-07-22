@@ -1,44 +1,98 @@
 "use client";
 
-interface Input {
-  protein: number;
-  fats: number;
-  carbs: number;
-}
-
 import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const formSchema = z.object({
+  foodName: z.string(),
+  protein: z.number(),
+  fats: z.number(),
+  carbs: z.number(),
+  calories: z.number(),
+});
+
+interface FormInputs {
+  foodName: string;
+  protein: number;
+  fats: number;
+  carbs: number;
+  calories: number;
+}
 
 export default function AddNewForm() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      foodName: "",
+      protein: null,
+      fats: null,
+      carbs: null,
+      calories: null,
+    },
+  });
+
+  const onSubmit = async (data: FormInputs) => {
+    try {
+      const res = await fetch("/api/auth/add-new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        alert("Added");
+        router.push("/dashboard");
+      }
+      return res.json();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
-      <div className="flex flex-col gap-3">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col items-center justify-center gap-3"
+      >
         <div className="space-y-1">
-          <Label>Protein</Label>
-          <Input type="number" {...register("protein")} />
+          <Label htmlFor="foodName">Food Name</Label>
+          <Input id="foodName" type="text" {...register("foodName")} />
+          {errors.foodName && (
+            <p className="text-red-500 ">{errors.foodName.message}</p>
+          )}
         </div>
         <div className="space-y-1">
-          <Label>Fats</Label>
-          <Input type="number" {...register("fats")} />
+          <Label htmlFor="protein (g)">Protein (g)</Label>
+          <Input id="protein" type="number" {...register("protein")} />
         </div>
         <div className="space-y-1">
-          <Label>Carbs</Label>
-          <Input type="number" {...register("carbs")} />
+          <Label htmlFor="fats">Fats (g)</Label>
+          <Input id="fats" type="number" {...register("fats")} />
         </div>
         <div className="space-y-1">
-          <Label>Calories</Label>
-          <Input type="number" {...register("calories")} />
+          <Label htmlFor="carbs">Carbs (g)</Label>
+          <Input id="carbs" type="number" {...register("carbs")} />
         </div>
-        <Button>Save</Button>
-      </div>
+        <div className="space-y-1">
+          <Label htmlFor="calories">Calories</Label>
+          <Input id="calories" type="number" {...register("calories")} />
+        </div>
+        <Button className="w-full " type="submit">
+          Save
+        </Button>
+      </form>
     </>
   );
 }

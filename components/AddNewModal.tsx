@@ -7,13 +7,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "./ui/button";
 
 export default function AddNewModal() {
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button>Choose from food data</Button>
+      <DialogTrigger className="px-3 py-2 text-lg text-white bg-black rounded-lg">
+        Choose from food data
       </DialogTrigger>
       <DialogContent className="w-full h-2/3">
         <DialogHeader>
