@@ -14,16 +14,23 @@ import {
 } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 
-interface Products {
+type Products = {
   _id: string;
   product_name: string;
   product_name_fr: string;
   image_small_url: string;
-}
+  nutrition_data_prepared_per: string;
+  nutriments: {
+    carbohydrates_100g: string;
+    fat_100g: string;
+    proteins_100g: string;
+    ["energy-kcal_100g"]: string;
+  };
+};
 
-interface foodData {
+type foodData = {
   products: Products[];
-}
+};
 
 const FoodDataPage = () => {
   const { data: session } = useSession();
@@ -59,7 +66,7 @@ const FoodDataPage = () => {
 
   return (
     <>
-      <h1>Food Search</h1>
+      <p className="py-3 text-xl text-center">Food Search</p>
       <div className="flex justify-center my-5">
         <div className="flex max-w-md gap-2">
           <Input type="text" onChange={handleInputChange} />
@@ -68,40 +75,46 @@ const FoodDataPage = () => {
           </Button>
         </div>
       </div>
-      <div className="flex flex-col gap-5 sm:grid sm:grid-cols-3">
+      <div className="flex flex-col items-center justify-center gap-2">
         {data ? (
           data.products.map((item) => (
-            <Card key={item._id} className="flex justify-between">
-              <CardHeader>
-                <CardTitle>
-                  {item.product_name ? item.product_name : item.product_name_fr}
-                </CardTitle>
-                <CardDescription>Card Description</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Card Content</p>
-              </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
+            <Card
+              key={item._id}
+              className="flex flex-col items-center justify-between w-5/6 p-3"
+            >
               <Image
+                width={100}
+                height={100}
                 src={item.image_small_url}
-                width="100"
-                height="100"
                 alt={
                   item.product_name
                     ? `${item.product_name} (No Image)`
                     : "No Image"
                 }
-                loading="lazy"
-                style={{ objectFit: "contain" }}
               />
+              <CardHeader className="text-center">
+                <CardTitle>
+                  {item.product_name ? item.product_name : item.product_name_fr}
+                </CardTitle>
+                <CardDescription>
+                  Per {item.nutrition_data_prepared_per}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <ul>
+                  <li>Calories: {item.nutriments["energy-kcal_100g"]}</li>
+                  <li>Carbohydrates: {item.nutriments.carbohydrates_100g}</li>
+                  <li>Fats: {item.nutriments.fat_100g}</li>
+                  <li>Protein: {item.nutriments.proteins_100g}</li>
+                </ul>
+              </CardContent>
+              {/* <CardFooter>
+                <p>Card Footer</p>
+              </CardFooter> */}
             </Card>
           ))
         ) : (
-          <div className="flex justify-center">
-            <p className="pt-24 text-lg">Search result will appear here</p>
-          </div>
+          <p>Search result will appear here</p>
         )}
       </div>
     </>

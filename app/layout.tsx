@@ -2,7 +2,6 @@ import NavBar from "@/components/NavBar";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import Providers from "@/components/Providers";
-import { Separator } from "@/components/ui/separator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +23,7 @@ export default function RootLayout({
               <NavBar />
             </nav>
           </header>
-          <main className="container mt-8">{children}</main>
+          <main className="max-w-md px-10 mx-auto mt-8">{children}</main>
         </body>
       </Providers>
     </html>

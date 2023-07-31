@@ -64,7 +64,7 @@ const NavBar = () => {
                 </Link>
                 <Link href="/food-data" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Food Data Preview
+                    Food Data
                   </NavigationMenuLink>
                 </Link>
                 <Link href="/login-signup" legacyBehavior passHref>
