@@ -13,15 +13,22 @@ import {
 } from "@/components/ui/popover";
 import HistoryTable from "@/components/HistoryTable";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import Unauthenticated from "@/components/Unauthenticated";
 
 type Props = {};
 
 export default function DashboardPage({}: Props) {
+  const { data: session } = useSession();
   const [date, setDate] = useState<Date>();
 
   useEffect(() => {
     setDate(new Date());
   }, []);
+
+  if (!session) {
+    return <Unauthenticated />;
+  }
 
   return (
     <div className="flex flex-col justify-center ">

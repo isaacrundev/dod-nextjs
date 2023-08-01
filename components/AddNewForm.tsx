@@ -43,18 +43,19 @@ export default function AddNewForm() {
 
   const onSubmit = async (data: FormInputs) => {
     try {
-      const res = await fetch("/api/auth/add-new", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        alert("Added");
-        router.push("/dashboard");
-      }
-      return res.json();
+      // const res = await fetch("/api/auth/add-new", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(data),
+      // });
+      // if (res.ok) {
+      //   alert("Added");
+      //   router.push("/dashboard");
+      // }
+      // return res.json();
+      console.log(data);
     } catch (error) {
       console.log(error);
     }

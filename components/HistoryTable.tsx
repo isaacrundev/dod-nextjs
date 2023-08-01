@@ -15,11 +15,12 @@ export default function HistoryTable() {
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader>
           <TableRow>
-            <TableHead>Name of Food</TableHead>
-            <TableHead>Protein (g)</TableHead>
-            <TableHead>Fats (g)</TableHead>
-            <TableHead>Carbs (g)</TableHead>
+            <TableHead>Food Name</TableHead>
             <TableHead>Calories</TableHead>
+            <TableHead>Carbs (g)</TableHead>
+            <TableHead>Fats (g)</TableHead>
+            <TableHead>Protein (g)</TableHead>
+            {/* <TableHead>Size (g)</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
