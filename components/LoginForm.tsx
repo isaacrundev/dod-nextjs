@@ -48,7 +48,10 @@ const LoginForm = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col justify-center gap-5"
+      >
         <div className="space-y-1 ">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -68,8 +71,9 @@ const LoginForm = () => {
             <p className="text-red-500 ">{errors.password.message}</p>
           )}
         </div>
-
-        <Button type="submit">Login</Button>
+        <Button className="w-full mt-5" type="submit">
+          Login
+        </Button>
       </form>
     </>
   );

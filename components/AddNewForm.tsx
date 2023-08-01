@@ -16,13 +16,13 @@ const formSchema = z.object({
   calories: z.number(),
 });
 
-interface FormInputs {
+type FormInputs = {
   foodName: string;
   protein: number;
   fats: number;
   carbs: number;
   calories: number;
-}
+};
 
 export default function AddNewForm() {
   const router = useRouter();
@@ -34,10 +34,10 @@ export default function AddNewForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       foodName: "",
-      protein: null,
-      fats: null,
-      carbs: null,
-      calories: null,
+      protein: 0,
+      fats: 0,
+      carbs: 0,
+      calories: 0,
     },
   });
 
@@ -74,20 +74,36 @@ export default function AddNewForm() {
           )}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="protein (g)">Protein (g)</Label>
-          <Input id="protein" type="number" {...register("protein")} />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="fats">Fats (g)</Label>
-          <Input id="fats" type="number" {...register("fats")} />
+          <Label htmlFor="calories">Calories</Label>
+          <Input
+            id="calories"
+            type="number"
+            {...(register("calories"), { required: true })}
+          />
         </div>
         <div className="space-y-1">
           <Label htmlFor="carbs">Carbs (g)</Label>
-          <Input id="carbs" type="number" {...register("carbs")} />
+          <Input
+            id="carbs"
+            type="number"
+            {...(register("carbs"), { required: true })}
+          />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="calories">Calories</Label>
-          <Input id="calories" type="number" {...register("calories")} />
+          <Label htmlFor="fats">Fats (g)</Label>
+          <Input
+            id="fats"
+            type="number"
+            {...(register("fats"), { required: true })}
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="protein (g)">Protein (g)</Label>
+          <Input
+            id="protein"
+            type="number"
+            {...(register("protein"), { required: true })}
+          />
         </div>
         <Button className="w-full " type="submit">
           Save

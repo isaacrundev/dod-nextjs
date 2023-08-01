@@ -103,7 +103,7 @@ const FoodDataPage = () => {
               <CardContent className="p-0">
                 <ul>
                   <li>Calories: {item.nutriments["energy-kcal_100g"]}</li>
-                  <li>Carbohydrates: {item.nutriments.carbohydrates_100g}</li>
+                  <li>carbs: {item.nutriments.carbohydrates_100g}</li>
                   <li>Fats: {item.nutriments.fat_100g}</li>
                   <li>Protein: {item.nutriments.proteins_100g}</li>
                 </ul>

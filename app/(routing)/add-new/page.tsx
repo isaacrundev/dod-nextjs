@@ -2,7 +2,6 @@
 
 import AddNewForm from "@/components/AddNewForm";
 import AddNewModal from "@/components/AddNewModal";
-import { Button } from "@/components/ui/button";
 
 type Props = {};
 
@@ -14,7 +13,8 @@ export default function AddNewPage({}: Props) {
           <p className="text-lg">Add New</p>
         </div>
         <p>Input Food Data</p>
-        <AddNewForm /> <p className="text-center text-md">Or...</p>
+        <AddNewForm />
+        <p className="text-center text-md">Or...</p>
         <div>
           <AddNewModal />
         </div>

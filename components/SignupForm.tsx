@@ -57,7 +57,10 @@ const SignupForm = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col justify-center gap-5"
+      >
         <div className="space-y-1 ">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -88,7 +91,9 @@ const SignupForm = () => {
             <p className="text-red-500 ">{errors.confirmPassword.message}</p>
           )}
         </div>
-        <Button type="submit">Sign Up</Button>
+        <Button className="w-full mt-5" type="submit">
+          Sign Up
+        </Button>
       </form>
     </>
   );

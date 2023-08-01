@@ -8,10 +8,12 @@ const LoginSignupPage = () => {
   return (
     <div className="container flex justify-center">
       <Tabs defaultValue="login" className="w-[400px]">
-        <TabsList>
-          <TabsTrigger value="login">LOGIN</TabsTrigger>
-          <TabsTrigger value="signup">SIGN UP</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-center">
+          <TabsList>
+            <TabsTrigger value="login">LOGIN</TabsTrigger>
+            <TabsTrigger value="signup">SIGN UP</TabsTrigger>
+          </TabsList>
+        </div>
         <TabsContent value="login">
           <LoginForm />
         </TabsContent>
