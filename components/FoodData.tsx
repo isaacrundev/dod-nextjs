@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,8 @@ const FoodData = () => {
     setInput(e.target.value);
   };
 
-  const handleClick = () => {
+  const handleClick = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
     getFoodData(input, page);
   };
@@ -74,12 +75,12 @@ const FoodData = () => {
         </p>
       </div>
       <div className="flex justify-center my-5">
-        <div className="flex max-w-md gap-2">
+        <form onSubmit={handleClick} className="flex max-w-md gap-2">
           <Input type="text" onChange={handleInputChange} />
-          <Button disabled={isLoading} onClick={handleClick}>
+          <Button disabled={isLoading} type="submit">
             Search
           </Button>
-        </div>
+        </form>
       </div>
       <div className="flex flex-col items-center justify-center gap-6">
         {data
