@@ -5,9 +5,7 @@ import AddNewModal from "@/components/AddNewModal";
 import Unauthenticated from "@/components/Unauthenticated";
 import { useSession } from "next-auth/react";
 
-type Props = {};
-
-export default function AddNewPage({}: Props) {
+export default function AddNewPage() {
   const { data: session } = useSession();
 
   if (!session) {

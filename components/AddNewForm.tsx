@@ -7,6 +7,8 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useContext, useEffect } from "react";
+import { ImportedFoodDataContext } from "@/context/ImportedFoodDataContext";
 
 const formSchema = z.object({
   foodName: z.string(),
@@ -16,7 +18,7 @@ const formSchema = z.object({
   calories: z.number(),
 });
 
-type FormInputs = {
+export type FormInputs = {
   foodName: string;
   protein: number;
   fats: number;
@@ -26,6 +28,7 @@ type FormInputs = {
 
 export default function AddNewForm() {
   const router = useRouter();
+  let importedValues = useContext(ImportedFoodDataContext);
   const {
     register,
     handleSubmit,
@@ -41,7 +44,11 @@ export default function AddNewForm() {
     },
   });
 
-  const onSubmit = async (data: FormInputs) => {
+  useEffect(() => {
+    console.log(importedValues);
+  }, [importedValues]);
+
+  const onSave = async (data: FormInputs) => {
     try {
       // const res = await fetch("/api/auth/add-new", {
       //   method: "POST",
@@ -64,7 +71,7 @@ export default function AddNewForm() {
   return (
     <>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSave)}
         className="flex flex-col items-center justify-center gap-3"
       >
         <div className="space-y-1">

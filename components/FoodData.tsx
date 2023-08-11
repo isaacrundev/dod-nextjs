@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 import noImage from "@/public/img/no-image-icon-23494.png";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { FormInputs } from "./AddNewForm";
 
 type Products = {
   _id: string;
@@ -40,6 +42,7 @@ const FoodData = () => {
   const [page, setPage] = useState(1);
   const [data, setData] = useState<foodData>();
   const [isLoading, setIsLoading] = useState(false);
+  const [importedFoodData, setImportedFoodData] = useState<FormInputs>();
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     try {
@@ -94,7 +97,7 @@ const FoodData = () => {
                   width={100}
                   height={100}
                   src={item.image_small_url ? item.image_small_url : noImage}
-                  alt={item.product_name_en}
+                  alt={item.product_name_en ? item.product_name_en : "no_alt"}
                 />
                 <CardHeader className="py-2 text-center">
                   <CardTitle>
@@ -120,7 +123,27 @@ const FoodData = () => {
                 </CardContent>
                 {session && (
                   <CardFooter className="p-3 pt-6">
-                    <Button className="w-28">Import</Button>
+                    <DialogClose
+                      type="button"
+                      className="h-10 text-white bg-black rounded-md w-28"
+                      onClick={() => {
+                        setImportedFoodData({
+                          foodName: item.product_name_en
+                            ? item.product_name_en
+                            : item.product_name
+                            ? item.product_name
+                            : item.product_name_fr
+                            ? item.product_name_fr
+                            : "(No Food Name Found)",
+                          protein: +item.nutriments.proteins_100g,
+                          fats: +item.nutriments.fat_100g,
+                          carbs: +item.nutriments.carbohydrates_100g,
+                          calories: +item.nutriments["energy-kcal_100g"],
+                        });
+                      }}
+                    >
+                      Import
+                    </DialogClose>
                   </CardFooter>
                 )}
               </Card>
