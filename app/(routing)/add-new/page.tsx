@@ -16,9 +16,9 @@ export default function AddNewPage() {
     <div className="container">
       <div className="flex flex-col items-center justify-center space-y-3">
         <div>
-          <p className="text-lg">Add New</p>
+          <p className="text-lg font-bold">Add New</p>
         </div>
-        <p>Input Food Data</p>
+        <p>Option 1: Input food data by yourself</p>
         <AddNewForm />
         <p className="text-center text-md">Or...</p>
         <div>

@@ -19,16 +19,19 @@ import Unauthenticated from "@/components/Unauthenticated";
 type Props = {};
 
 export default function DashboardPage({}: Props) {
-  const { data: session } = useSession();
   const [date, setDate] = useState<Date>();
+
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      return <Unauthenticated />;
+    },
+  });
+  status === "loading" && <p>Loading</p>;
 
   useEffect(() => {
     setDate(new Date());
   }, []);
-
-  if (!session) {
-    return <Unauthenticated />;
-  }
 
   return (
     <div className="flex flex-col justify-center ">

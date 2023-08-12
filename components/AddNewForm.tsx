@@ -7,8 +7,8 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useContext, useEffect } from "react";
-import { ImportedFoodDataContext } from "@/context/ImportedFoodDataContext";
+import { useSession } from "next-auth/react";
+import Unauthenticated from "./Unauthenticated";
 
 const formSchema = z.object({
   foodName: z.string(),
@@ -28,7 +28,7 @@ export type FormInputs = {
 
 export default function AddNewForm() {
   const router = useRouter();
-  let importedValues = useContext(ImportedFoodDataContext);
+  const { data: session } = useSession();
   const {
     register,
     handleSubmit,
@@ -37,16 +37,16 @@ export default function AddNewForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       foodName: "",
-      protein: 0,
-      fats: 0,
-      carbs: 0,
-      calories: 0,
+      protein: +"",
+      fats: +"",
+      carbs: +"",
+      calories: +"",
     },
   });
 
-  useEffect(() => {
-    console.log(importedValues);
-  }, [importedValues]);
+  if (!session) {
+    return <Unauthenticated />;
+  }
 
   const onSave = async (data: FormInputs) => {
     try {
@@ -62,7 +62,7 @@ export default function AddNewForm() {
       //   router.push("/dashboard");
       // }
       // return res.json();
-      console.log(data);
+      console.log({ ...data, userId: session.user?.email });
     } catch (error) {
       console.log(error);
     }
@@ -82,7 +82,7 @@ export default function AddNewForm() {
           )}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="calories">Calories</Label>
+          <Label htmlFor="calories">Calories (kcals)</Label>
           <Input
             id="calories"
             type="number"
