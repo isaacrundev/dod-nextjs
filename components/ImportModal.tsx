@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import FoodData from "./FoodData";
 
-export default function AddNewModal() {
+export default function ImportModal() {
   return (
     <Dialog>
-      <DialogTrigger className="px-3 py-2 text-lg text-white bg-black rounded-lg">
+      <DialogTrigger className="px-3 py-2 text-white bg-black rounded-lg text-md">
         Choose from food data
       </DialogTrigger>
 

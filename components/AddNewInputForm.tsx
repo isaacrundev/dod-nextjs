@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
@@ -10,37 +10,33 @@ import { z } from "zod";
 import { useSession } from "next-auth/react";
 import Unauthenticated from "./Unauthenticated";
 
-const formSchema = z.object({
-  foodName: z.string(),
+const inputByYourselfSchema = z.object({
+  foodName: z.string().nonempty("Food Name can't be empty"),
   protein: z.number(),
   fats: z.number(),
   carbs: z.number(),
   calories: z.number(),
+  foodSize: z.number(),
 });
 
-export type FormInputs = {
-  foodName: string;
-  protein: number;
-  fats: number;
-  carbs: number;
-  calories: number;
-};
+type InputByYourselfSchema = z.infer<typeof inputByYourselfSchema>;
 
-export default function AddNewForm() {
+export default function AddNewInputForm() {
   const router = useRouter();
   const { data: session } = useSession();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(formSchema),
+  } = useForm<InputByYourselfSchema>({
+    resolver: zodResolver(inputByYourselfSchema),
     defaultValues: {
       foodName: "",
-      protein: +"",
-      fats: +"",
-      carbs: +"",
-      calories: +"",
+      protein: 0,
+      fats: 0,
+      carbs: 0,
+      calories: 0,
+      foodSize: 0,
     },
   });
 
@@ -48,21 +44,23 @@ export default function AddNewForm() {
     return <Unauthenticated />;
   }
 
-  const onSave = async (data: FormInputs) => {
+  const onSave = async (data: InputByYourselfSchema) => {
     try {
+      const dataWithEmail = { ...data, email: session!.user?.email };
+      console.log(dataWithEmail);
+
       // const res = await fetch("/api/auth/add-new", {
       //   method: "POST",
       //   headers: {
       //     "Content-Type": "application/json",
       //   },
-      //   body: JSON.stringify(data),
+      //   body: JSON.stringify(dataWithEmail),
       // });
       // if (res.ok) {
       //   alert("Added");
       //   router.push("/dashboard");
       // }
       // return res.json();
-      console.log({ ...data, userId: session.user?.email });
     } catch (error) {
       console.log(error);
     }
@@ -74,6 +72,7 @@ export default function AddNewForm() {
         onSubmit={handleSubmit(onSave)}
         className="flex flex-col items-center justify-center gap-3"
       >
+        <p className="text-lg font-bold"> Input food data by your own</p>
         <div className="space-y-1">
           <Label htmlFor="foodName">Food Name</Label>
           <Input id="foodName" type="text" {...register("foodName")} />
@@ -86,34 +85,56 @@ export default function AddNewForm() {
           <Input
             id="calories"
             type="number"
-            {...(register("calories"), { required: true })}
+            {...register("calories", { valueAsNumber: true })}
           />
+          {errors.calories && (
+            <p className="text-red-500 ">{errors.calories.message}</p>
+          )}
         </div>
         <div className="space-y-1">
           <Label htmlFor="carbs">Carbs (g)</Label>
           <Input
             id="carbs"
             type="number"
-            {...(register("carbs"), { required: true })}
+            {...register("carbs", { valueAsNumber: true })}
           />
+          {errors.carbs && (
+            <p className="text-red-500 ">{errors.carbs.message}</p>
+          )}
         </div>
         <div className="space-y-1">
           <Label htmlFor="fats">Fats (g)</Label>
           <Input
             id="fats"
             type="number"
-            {...(register("fats"), { required: true })}
+            {...register("fats", { valueAsNumber: true })}
           />
+          {errors.fats && (
+            <p className="text-red-500 ">{errors.fats.message}</p>
+          )}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="protein (g)">Protein (g)</Label>
+          <Label htmlFor="protein">Protein (g)</Label>
           <Input
             id="protein"
-            type="number"
-            {...(register("protein"), { required: true })}
+            {...register("protein", { valueAsNumber: true })}
           />
+          {errors.protein && (
+            <p className="text-red-500 ">{errors.protein.message}</p>
+          )}
         </div>
-        <Button className="w-full " type="submit">
+        <div className="space-y-1">
+          <Label htmlFor="food-size">Size in total (g or ml)</Label>
+          <Input
+            id="food-size"
+            type="number"
+            {...register("foodSize", { valueAsNumber: true })}
+          />
+          {errors.foodSize && (
+            <p className="text-red-500 ">{errors.foodSize.message}</p>
+          )}
+        </div>
+        <Button className="w-28" type="submit">
           Save
         </Button>
       </form>

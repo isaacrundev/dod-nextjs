@@ -8,20 +8,23 @@ const InputFoodDataSchema = z.object({
   fats: number(),
   carbs: number(),
   calories: number(),
-  userId: string(),
+  size: number(),
+  email: string().email(),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
-    const { foodName, protein, fats, carbs, calories, userId } =
+    const { foodName, protein, fats, carbs, calories, size, email } =
       InputFoodDataSchema.parse(reqBody);
 
-    if (!foodName || !protein || !fats || !carbs! || calories) {
+    if (!foodName || !protein || !fats || !carbs || !calories || !email) {
       return new NextResponse(`Missing field(s)`, {
         status: 400,
       });
     }
+
+    // const userId = await prisma.user.findUnique({ where: { email } });
 
     const newRecord = await prisma.record.create({
       data: {
