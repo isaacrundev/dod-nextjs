@@ -12,8 +12,8 @@ import AddNewInputForm from "./AddNewInputForm";
 export default function InputModal() {
   return (
     <Dialog>
-      <DialogTrigger className="px-3 py-2 text-white bg-black rounded-lg text-md">
-        Input food data by your own
+      <DialogTrigger className="px-3 py-2 text-white rounded-lg bg-primary text-md">
+        Input by your own
       </DialogTrigger>
       <DialogContent className="overflow-auto h-5/6">
         <AddNewInputForm />

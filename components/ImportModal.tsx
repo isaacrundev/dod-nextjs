@@ -12,7 +12,7 @@ import FoodData from "./FoodData";
 export default function ImportModal() {
   return (
     <Dialog>
-      <DialogTrigger className="px-3 py-2 text-white bg-black rounded-lg text-md">
+      <DialogTrigger className="px-3 py-2 text-white rounded-lg bg-primary text-md">
         Choose from food data
       </DialogTrigger>
 

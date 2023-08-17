@@ -1,6 +1,6 @@
 "use client";
 
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
@@ -8,18 +8,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
-import Unauthenticated from "./Unauthenticated";
-
-const inputByYourselfSchema = z.object({
-  foodName: z.string().nonempty("Food Name can't be empty"),
-  protein: z.number(),
-  fats: z.number(),
-  carbs: z.number(),
-  calories: z.number(),
-  foodSize: z.number(),
-});
-
-type InputByYourselfSchema = z.infer<typeof inputByYourselfSchema>;
+import { FoodInputSchema, foodInputSchema } from "./FoodData";
 
 export default function AddNewInputForm() {
   const router = useRouter();
@@ -28,8 +17,8 @@ export default function AddNewInputForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<InputByYourselfSchema>({
-    resolver: zodResolver(inputByYourselfSchema),
+  } = useForm<FoodInputSchema>({
+    resolver: zodResolver(foodInputSchema),
     defaultValues: {
       foodName: "",
       protein: 0,
@@ -40,29 +29,23 @@ export default function AddNewInputForm() {
     },
   });
 
-  if (!session) {
-    return <Unauthenticated />;
-  }
-
-  const onSave = async (data: InputByYourselfSchema) => {
+  const onSave = async (data: FoodInputSchema) => {
     try {
-      const dataWithEmail = { ...data, email: session!.user?.email };
-      console.log(dataWithEmail);
+      const res = await fetch("/api/records/add-new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...data, email: session!.user?.email }),
+      });
+      if (res.status === 200) {
+        alert("Added");
+        router.push("/dashboard");
+      }
 
-      // const res = await fetch("/api/auth/add-new", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(dataWithEmail),
-      // });
-      // if (res.ok) {
-      //   alert("Added");
-      //   router.push("/dashboard");
-      // }
-      // return res.json();
+      return res.json();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

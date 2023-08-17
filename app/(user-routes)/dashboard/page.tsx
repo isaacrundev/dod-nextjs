@@ -13,21 +13,11 @@ import {
 } from "@/components/ui/popover";
 import HistoryTable from "@/components/HistoryTable";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import Unauthenticated from "@/components/Unauthenticated";
 
 type Props = {};
 
 export default function DashboardPage({}: Props) {
   const [date, setDate] = useState<Date>();
-
-  const { data: session, status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      return <Unauthenticated />;
-    },
-  });
-  status === "loading" && <p>Loading</p>;
 
   useEffect(() => {
     setDate(new Date());

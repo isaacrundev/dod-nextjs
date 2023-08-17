@@ -17,19 +17,19 @@ export default function HistoryTable() {
           <TableRow>
             <TableHead>Food Name</TableHead>
             <TableHead>Calories</TableHead>
-            <TableHead>Carbs (g)</TableHead>
+            {/* <TableHead>Carbs (g)</TableHead>
             <TableHead>Fats (g)</TableHead>
-            <TableHead>Protein (g)</TableHead>
+            <TableHead>Protein (g)</TableHead> */}
             {/* <TableHead>Size (g)</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell>Krispy Kreme Orignal Donut</TableCell>
-            <TableCell>0</TableCell>
-            <TableCell>20</TableCell>
+            <TableCell>Sample junk food</TableCell>
+            <TableCell>256</TableCell>
+            {/* <TableCell>20</TableCell>
             <TableCell>40</TableCell>
-            <TableCell>300</TableCell>
+            <TableCell>300</TableCell> */}
           </TableRow>
         </TableBody>
       </Table>

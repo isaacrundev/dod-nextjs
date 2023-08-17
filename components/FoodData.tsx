@@ -19,8 +19,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Label } from "./ui/label";
+import { foodData } from "@/app";
 
-const importSchema = z.object({
+export const foodInputSchema = z.object({
   foodName: z.string(),
   protein: z.number(),
   fats: z.number(),
@@ -29,26 +30,7 @@ const importSchema = z.object({
   foodSize: z.number(),
 });
 
-type ImportSchema = z.infer<typeof importSchema>;
-
-type Products = {
-  _id: string;
-  product_name: string;
-  product_name_en: string;
-  product_name_fr: string;
-  image_small_url: string;
-  nutrition_data_prepared_per: string;
-  nutriments: {
-    carbohydrates_100g: string;
-    fat_100g: string;
-    proteins_100g: string;
-    ["energy-kcal_100g"]: string;
-  };
-};
-
-type foodData = {
-  products: Products[];
-};
+export type FoodInputSchema = z.infer<typeof foodInputSchema>;
 
 const FoodData = () => {
   const { data: session } = useSession();
@@ -57,7 +39,7 @@ const FoodData = () => {
   const [data, setData] = useState<foodData>();
   const [isLoading, setIsLoading] = useState(false);
   const [importedFoodData, setImportedFoodData] = useState<
-    ImportSchema | undefined
+    FoodInputSchema | undefined
   >(undefined);
   const {
     register,
@@ -65,8 +47,8 @@ const FoodData = () => {
     formState: { errors },
     setValue,
     getValues,
-  } = useForm<ImportSchema>({
-    resolver: zodResolver(importSchema),
+  } = useForm<FoodInputSchema>({
+    resolver: zodResolver(foodInputSchema),
     defaultValues: {
       foodName: "",
       protein: 0,
@@ -76,10 +58,6 @@ const FoodData = () => {
       foodSize: 100,
     },
   });
-
-  useEffect(() => {
-    console.log(importedFoodData);
-  }, [importedFoodData]);
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     try {
@@ -107,7 +85,7 @@ const FoodData = () => {
     getFoodData(input, page);
   };
 
-  const onSave = async (data: ImportSchema) => {
+  const onSave = async (data: FoodInputSchema) => {
     try {
       const dataWithEmail = { ...data, email: session!.user?.email };
       console.log(dataWithEmail);
