@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -7,8 +9,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useEffect, useState } from "react";
+import { FoodInputSchema } from "./FoodData";
+
+interface Record extends FoodInputSchema {
+  id: string;
+  createAt: Date;
+}
 
 export default function HistoryTable() {
+  const [records, setRecords] = useState<Record[] | null>();
+
+  const fetchHistory = async (date?: Date) => {
+    try {
+      const res = await fetch("/api/records", { method: "GET" });
+      setRecords(await res.json());
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  useEffect(() => {
+    console.log(records);
+  }, [records]);
   return (
     <>
       <Table>
@@ -24,13 +51,19 @@ export default function HistoryTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell>Sample junk food</TableCell>
-            <TableCell>256</TableCell>
-            {/* <TableCell>20</TableCell>
+          {/* <TableCell>Sample junk food</TableCell>
+            <TableCell>256</TableCell> */}
+          {records &&
+            records.map((record) => (
+              <TableRow key={record.id}>
+                <TableCell>{record.foodName}</TableCell>
+                <TableCell>{record.calories}</TableCell>
+              </TableRow>
+            ))}
+
+          {/* <TableCell>20</TableCell>
             <TableCell>40</TableCell>
             <TableCell>300</TableCell> */}
-          </TableRow>
         </TableBody>
       </Table>
     </>

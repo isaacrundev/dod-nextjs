@@ -30,14 +30,14 @@ model User {
 model Record {
   id         String   @id @default(uuid())
   foodName   String
-  carbs       Int
-  protein    Int
-  fats        Int
-  calories   Int
+  carbs       Float
+  protein    Float
+  fats        Float
+  calories   Float
+  foodSize   Float
   createAt   DateTime @default(now())
   // updateAt   DateTime
-  userId     String @unique
+  userId     String 
   // intakeTime DateTime
   user       User     @relation(fields: [userId], references: [id])
-  foodSize Int
 }

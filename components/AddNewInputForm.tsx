@@ -6,13 +6,10 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useSession } from "next-auth/react";
 import { FoodInputSchema, foodInputSchema } from "./FoodData";
 
 export default function AddNewInputForm() {
   const router = useRouter();
-  const { data: session } = useSession();
   const {
     register,
     handleSubmit,
@@ -36,16 +33,17 @@ export default function AddNewInputForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...data, email: session!.user?.email }),
+        body: JSON.stringify(data),
       });
-      if (res.status === 200) {
-        alert("Added");
+
+      if (res.ok) {
+        alert("Added Successfully!!");
         router.push("/dashboard");
       }
 
       return res.json();
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -67,7 +65,7 @@ export default function AddNewInputForm() {
           <Label htmlFor="calories">Calories (kcals)</Label>
           <Input
             id="calories"
-            type="number"
+            // type="number"
             {...register("calories", { valueAsNumber: true })}
           />
           {errors.calories && (
@@ -78,7 +76,7 @@ export default function AddNewInputForm() {
           <Label htmlFor="carbs">Carbs (g)</Label>
           <Input
             id="carbs"
-            type="number"
+            // type="number"
             {...register("carbs", { valueAsNumber: true })}
           />
           {errors.carbs && (
@@ -89,7 +87,7 @@ export default function AddNewInputForm() {
           <Label htmlFor="fats">Fats (g)</Label>
           <Input
             id="fats"
-            type="number"
+            // type="number"
             {...register("fats", { valueAsNumber: true })}
           />
           {errors.fats && (
@@ -100,6 +98,8 @@ export default function AddNewInputForm() {
           <Label htmlFor="protein">Protein (g)</Label>
           <Input
             id="protein"
+            // type="number"
+
             {...register("protein", { valueAsNumber: true })}
           />
           {errors.protein && (
@@ -110,7 +110,7 @@ export default function AddNewInputForm() {
           <Label htmlFor="food-size">Size in total (g or ml)</Label>
           <Input
             id="food-size"
-            type="number"
+            // type="number"
             {...register("foodSize", { valueAsNumber: true })}
           />
           {errors.foodSize && (

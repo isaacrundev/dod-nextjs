@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/popover";
 import HistoryTable from "@/components/HistoryTable";
 import { useEffect, useState } from "react";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 type Props = {};
 
@@ -22,6 +23,12 @@ export default function DashboardPage({}: Props) {
   useEffect(() => {
     setDate(new Date());
   }, []);
+
+  useEffect(() => {
+    console.log(date);
+  }, [date]);
+
+  const handleApplyDate = () => {};
 
   return (
     <div className="flex flex-col justify-center ">
@@ -50,7 +57,9 @@ export default function DashboardPage({}: Props) {
               initialFocus
             />
             <div className="flex justify-center pb-3">
-              <Button>Apply</Button>
+              <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
+                Apply
+              </PopoverClose>
             </div>
           </PopoverContent>
         </Popover>

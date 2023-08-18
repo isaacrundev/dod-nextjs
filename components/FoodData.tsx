@@ -20,19 +20,38 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Label } from "./ui/label";
 import { foodData } from "@/app";
+import { useRouter } from "next/navigation";
 
 export const foodInputSchema = z.object({
-  foodName: z.string(),
-  protein: z.number(),
-  fats: z.number(),
-  carbs: z.number(),
-  calories: z.number(),
-  foodSize: z.number(),
+  foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
+  protein: z.coerce
+    .number()
+    .nonnegative()
+    .multipleOf(0.01, { message: "Up to 2 decimal place" }),
+  fats: z.coerce
+    .number()
+    .nonnegative()
+    .multipleOf(0.01, { message: "Up to 2 decimal place" }),
+
+  carbs: z.coerce
+    .number()
+    .nonnegative()
+    .multipleOf(0.01, { message: "Up to 2 decimal place" }),
+  calories: z.coerce
+    .number()
+    .nonnegative()
+    .multipleOf(0.01, { message: "Up to 2 decimal place" }),
+  foodSize: z.coerce
+    .number()
+    .positive({ message: "food size can't be zero" })
+    .int({ message: "Interger value only" }),
 });
 
 export type FoodInputSchema = z.infer<typeof foodInputSchema>;
 
 const FoodData = () => {
+  const router = useRouter();
+
   const { data: session } = useSession();
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
@@ -55,9 +74,30 @@ const FoodData = () => {
       fats: 0,
       carbs: 0,
       calories: 0,
-      foodSize: 100,
+      foodSize: 0,
     },
   });
+
+  const onSave = async (data: FoodInputSchema) => {
+    try {
+      const res = await fetch("/api/records/add-new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        alert("Added Successfully!!");
+        router.push("/dashboard");
+      }
+
+      return res.json();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     try {
@@ -83,28 +123,6 @@ const FoodData = () => {
     e.preventDefault();
     setIsLoading(true);
     getFoodData(input, page);
-  };
-
-  const onSave = async (data: FoodInputSchema) => {
-    try {
-      const dataWithEmail = { ...data, email: session!.user?.email };
-      console.log(dataWithEmail);
-
-      // const res = await fetch("/api/auth/add-new", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(dataWithEmail),
-      // });
-      // if (res.ok) {
-      //   alert("Added");
-      //   router.push("/dashboard");
-      // }
-      // return res.json();
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const handleFoodSizeOnChange = (e: ChangeEvent<HTMLInputElement>) => {
