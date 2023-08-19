@@ -37,11 +37,10 @@ export async function POST(req: Request) {
 
     const reqBody = await req.json();
 
-    // const { foodName, protein, fats, carbs, calories, foodSize } =
-    //   foodDataRequestSchema.parse(reqBody);
-    // zod validation doesn't work
+    console.log(reqBody);
 
-    const { foodName, protein, fats, carbs, calories, foodSize } = reqBody;
+    const { foodName, protein, fats, carbs, calories, foodSize } =
+      foodDataRequestSchema.parse(reqBody);
 
     const getUser = await prisma.user.findUnique({
       where: { email: session.user.email },

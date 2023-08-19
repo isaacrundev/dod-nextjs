@@ -35,6 +35,7 @@ export default function HistoryTable() {
 
   useEffect(() => {
     console.log(records);
+    records && console.log(records[0].createAt);
   }, [records]);
   return (
     <>
@@ -53,13 +54,18 @@ export default function HistoryTable() {
         <TableBody>
           {/* <TableCell>Sample junk food</TableCell>
             <TableCell>256</TableCell> */}
-          {records &&
+          {records ? (
             records.map((record) => (
               <TableRow key={record.id}>
                 <TableCell>{record.foodName}</TableCell>
                 <TableCell>{record.calories}</TableCell>
               </TableRow>
-            ))}
+            ))
+          ) : (
+            <TableRow key="no-records">
+              <TableCell>No Records</TableCell>
+            </TableRow>
+          )}
 
           {/* <TableCell>20</TableCell>
             <TableCell>40</TableCell>
