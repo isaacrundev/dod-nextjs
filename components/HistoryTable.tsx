@@ -17,26 +17,24 @@ interface Record extends FoodInputSchema {
   createAt: Date;
 }
 
-export default function HistoryTable() {
+export default function HistoryTable({ date }: { date: Date }) {
   const [records, setRecords] = useState<Record[] | null>();
 
-  const fetchHistory = async (date?: Date) => {
+  const fetchHistory = async (date: Date) => {
     try {
-      const res = await fetch("/api/records", { method: "GET" });
+      const res = await fetch(`/api/records/${date}`, {
+        method: "GET",
+      });
       setRecords(await res.json());
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    fetchHistory();
-  }, []);
+  // useEffect(() => {
+  //   fetchHistory(date);
+  // }, [date]);
 
-  useEffect(() => {
-    console.log(records);
-    records && console.log(records[0].createAt);
-  }, [records]);
   return (
     <>
       <Table>

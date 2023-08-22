@@ -36,7 +36,7 @@ model Record {
   calories   Float
   foodSize   Float
   createAt   DateTime @default(now())
-  // updateAt   DateTime
+  // updateAt   DateTime?
   userId     String 
   // intakeTime DateTime
   user       User     @relation(fields: [userId], references: [id])
