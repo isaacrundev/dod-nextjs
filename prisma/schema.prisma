@@ -38,6 +38,6 @@ model Record {
   createAt   DateTime @default(now())
   // updateAt   DateTime?
   userId     String 
-  // intakeTime DateTime
+  intakeTime DateTime
   user       User     @relation(fields: [userId], references: [id])
 }

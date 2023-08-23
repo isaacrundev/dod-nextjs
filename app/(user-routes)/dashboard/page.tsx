@@ -16,21 +16,12 @@ import { useEffect, useState } from "react";
 import { PopoverClose } from "@radix-ui/react-popover";
 
 export default function DashboardPage() {
-  const [date, setDate] = useState<Date>();
-
-  useEffect(() => {
-    setDate(new Date());
-  }, []);
-
-  useEffect(() => {
-    console.log(date?.toISOString());
-  }, [date]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
 
   return (
     <div className="flex flex-col justify-center ">
-      {/* <p className="py-5 text-xl text-center">
-          {date.getMonth() + 1}/{date.getDate()}
-        </p> */}
       <div className="py-4">
         <Popover>
           <PopoverTrigger asChild>
@@ -38,18 +29,18 @@ export default function DashboardPage() {
               variant={"outline"}
               className={cn(
                 "w-[280px] justify-start text-left font-normal",
-                !date && "text-muted-foreground"
+                !selectedDate && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="w-4 h-4 mr-2" />
-              {date && format(date, "PPP")}
+              {selectedDate && format(selectedDate, "P")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
-              selected={date}
-              onSelect={setDate}
+              selected={selectedDate}
+              onSelect={setSelectedDate}
               initialFocus
             />
             <div className="flex justify-center pb-3">
@@ -60,7 +51,7 @@ export default function DashboardPage() {
           </PopoverContent>
         </Popover>
       </div>
-      <HistoryTable date={date} />
+      <HistoryTable selectedDate={selectedDate!} />
     </div>
   );
 }

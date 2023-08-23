@@ -27,6 +27,7 @@ export const foodDataRequestSchema = z.object({
     .number()
     .positive()
     .int({ message: "Interger value only" }),
+  intakeTime: z.coerce.string().datetime(),
 });
 
 export async function POST(req: Request) {
@@ -37,10 +38,11 @@ export async function POST(req: Request) {
 
     const reqBody = await req.json();
 
-    console.log(reqBody);
-
-    const { foodName, protein, fats, carbs, calories, foodSize } =
+    const { foodName, protein, fats, carbs, calories, foodSize, intakeTime } =
       foodDataRequestSchema.parse(reqBody);
+
+    // const { foodName, protein, fats, carbs, calories, foodSize, intakeTime } =
+    //   reqBody;
 
     const getUser = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -55,6 +57,7 @@ export async function POST(req: Request) {
         calories,
         foodSize,
         userId: getUser!.id,
+        intakeTime,
       },
     });
 
