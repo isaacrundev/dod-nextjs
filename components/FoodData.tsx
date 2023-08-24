@@ -21,6 +21,12 @@ import { z } from "zod";
 import { Label } from "./ui/label";
 import { foodData } from "@/app";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "./ui/calendar";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 export const foodInputSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -50,8 +56,10 @@ export const foodInputSchema = z.object({
 export type FoodInputSchema = z.infer<typeof foodInputSchema>;
 
 const FoodData = () => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
   const router = useRouter();
-
   const { data: session } = useSession();
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
@@ -65,7 +73,6 @@ const FoodData = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
   } = useForm<FoodInputSchema>({
     resolver: zodResolver(foodInputSchema),
     defaultValues: {
@@ -78,14 +85,18 @@ const FoodData = () => {
     },
   });
 
+  const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
+
   const onSave = async (data: FoodInputSchema) => {
+    const combined = { ...data, intakeDate: mmddyyyy };
+    console.log(combined);
     try {
       const res = await fetch("/api/records/add-new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(combined),
       });
 
       if (res.ok) {
@@ -150,6 +161,39 @@ const FoodData = () => {
           importedFoodData ? `flex` : `hidden`
         } flex-col items-center justify-center gap-3`}
       >
+        <div className="flex flex-col space-y-1">
+          <Label htmlFor="intake-date">Date</Label>
+          <div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="intake-date"
+                  variant={"outline"}
+                  className={cn(
+                    " justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="w-4 h-4 mr-2" />
+                  {selectedDate && format(selectedDate, "P")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  initialFocus
+                />
+                <div className="flex justify-center pb-3">
+                  <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
+                    Apply
+                  </PopoverClose>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
         <div className="space-y-1">
           <Label htmlFor="foodName">Food Name</Label>
           <Input disabled id="foodName" type="text" {...register("foodName")} />

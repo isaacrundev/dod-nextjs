@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format, parse } from "date-fns";
 import { FoodInputSchema } from "./FoodData";
 import { useEffect, useState } from "react";
 
@@ -18,16 +17,19 @@ interface Record extends FoodInputSchema {
   createAt: Date;
 }
 
-export default function HistoryTable({ selectedDate }: { selectedDate: Date }) {
+export default function HistoryTable({
+  selectedDate,
+}: {
+  selectedDate: string;
+}) {
   const [records, setRecords] = useState<Record[] | null>();
 
-  const fetchHistory = async (datetime: Date) => {
+  const fetchHistory = async (date: string) => {
     try {
-      const isoParsed = datetime.toISOString();
-      const res = await fetch(`/api/records/${isoParsed}`, {
+      const res = await fetch(`/api/records/${date}`, {
         method: "GET",
       });
-      return res.json();
+      res.status === 200 ? setRecords(await res.json()) : setRecords(null);
     } catch (error) {
       console.log(error);
     }

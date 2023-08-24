@@ -20,6 +20,12 @@ export default function DashboardPage() {
     new Date()
   );
 
+  useEffect(() => {
+    console.log(selectedDate);
+  }, [selectedDate]);
+
+  const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
+
   return (
     <div className="flex flex-col justify-center ">
       <div className="py-4">
@@ -33,7 +39,7 @@ export default function DashboardPage() {
               )}
             >
               <CalendarIcon className="w-4 h-4 mr-2" />
-              {selectedDate && format(selectedDate, "P")}
+              {selectedDate && mmddyyyy}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -51,7 +57,7 @@ export default function DashboardPage() {
           </PopoverContent>
         </Popover>
       </div>
-      <HistoryTable selectedDate={selectedDate!} />
+      <HistoryTable selectedDate={mmddyyyy!} />
     </div>
   );
 }

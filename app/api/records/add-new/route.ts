@@ -9,25 +9,25 @@ export const foodDataRequestSchema = z.object({
   protein: z.coerce
     .number()
     .nonnegative()
-    .multipleOf(0.1, { message: "1 decimal place only" }),
+    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
   fats: z.coerce
     .number()
     .nonnegative()
-    .multipleOf(0.1, { message: "1 decimal place only" }),
+    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
 
   carbs: z.coerce
     .number()
     .nonnegative()
-    .multipleOf(0.1, { message: "1 decimal place only" }),
+    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
   calories: z.coerce
     .number()
     .nonnegative()
-    .multipleOf(0.1, { message: "1 decimal place only" }),
+    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
   foodSize: z.coerce
     .number()
     .positive()
     .int({ message: "Interger value only" }),
-  intakeTime: z.coerce.string().datetime(),
+  intakeDate: z.coerce.string(),
 });
 
 export async function POST(req: Request) {
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
     const reqBody = await req.json();
 
-    const { foodName, protein, fats, carbs, calories, foodSize, intakeTime } =
+    const { foodName, protein, fats, carbs, calories, foodSize, intakeDate } =
       foodDataRequestSchema.parse(reqBody);
 
     // const { foodName, protein, fats, carbs, calories, foodSize, intakeTime } =
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         calories,
         foodSize,
         userId: getUser!.id,
-        intakeTime,
+        intakeDate,
       },
     });
 

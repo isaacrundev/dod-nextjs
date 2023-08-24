@@ -36,16 +36,18 @@ export default function AddNewInputForm() {
     },
   });
 
+  const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
+
   const onSave = async (data: FoodInputSchema) => {
-    const intakeTime = selectedDate?.toISOString();
-    console.log({ ...data, intakeTime });
+    const combined = { ...data, intakeDate: mmddyyyy };
+    console.log(combined);
     try {
       const res = await fetch("/api/records/add-new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...data, intakeTime }),
+        body: JSON.stringify(combined),
       });
 
       if (res.ok) {

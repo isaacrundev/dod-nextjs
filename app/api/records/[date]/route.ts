@@ -19,10 +19,8 @@ export async function GET(
       where: { email: session.user.email },
     });
 
-    console.log(params.date);
-
     const res = await prisma.record.findMany({
-      where: { userId: getUser?.id, intakeTime: params.date },
+      where: { userId: getUser?.id, intakeDate: params.date },
     });
 
     return NextResponse.json(res);
