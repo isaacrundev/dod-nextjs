@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-16">
       <div className="relative w-64">
-        <Image alt="Hands-Phone" src={handsPhonePic} />
+        <Image alt="Hands-Phone" src={handsPhonePic} placeholder="blur" />
       </div>
 
       <p>
@@ -17,7 +17,7 @@ const Home = () => {
         we&apos;ve got you covered.
       </p>
       <div className="relative w-64">
-        <Image alt="Fitz-Standing" src={trainingManPic} />
+        <Image alt="Fitz-Standing" src={trainingManPic} placeholder="blur" />
       </div>
       <p>
         With our comprehensive nutritional facts database, you can easily search
@@ -27,7 +27,11 @@ const Home = () => {
         your dietary decisions.
       </p>
       <div className="relative w-64">
-        <Image alt="Life-Management" src={lifeManagementPic} />
+        <Image
+          alt="Life-Management"
+          src={lifeManagementPic}
+          placeholder="blur"
+        />
       </div>
       <p>
         You can conveniently record your daily intake, allowing you to track

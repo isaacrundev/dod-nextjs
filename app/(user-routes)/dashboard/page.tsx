@@ -20,10 +20,6 @@ export default function DashboardPage() {
     new Date()
   );
 
-  useEffect(() => {
-    console.log(selectedDate);
-  }, [selectedDate]);
-
   const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
 
   return (

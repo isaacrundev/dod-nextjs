@@ -29,7 +29,9 @@ export default function HistoryTable({
       const res = await fetch(`/api/records/${date}`, {
         method: "GET",
       });
-      res.status === 200 ? setRecords(await res.json()) : setRecords(null);
+
+      !res.ok && setRecords(null);
+      setRecords(await res.json());
     } catch (error) {
       console.log(error);
     }
@@ -56,18 +58,21 @@ export default function HistoryTable({
         <TableBody>
           {/* <TableCell>Sample junk food</TableCell>
             <TableCell>256</TableCell> */}
-          {records ? (
+          {records &&
             records.map((record) => (
               <TableRow key={record.id}>
                 <TableCell>{record.foodName}</TableCell>
                 <TableCell>{record.calories}</TableCell>
               </TableRow>
-            ))
-          ) : (
+            ))}
+          {records?.length === 0 && (
             <TableRow key="no-records">
               <TableCell>No Records</TableCell>
             </TableRow>
           )}
+          {/* <TableRow key="no-records">
+              <TableCell>No Records</TableCell>
+            </TableRow> */}
 
           {/* <TableCell>20</TableCell>
             <TableCell>40</TableCell>

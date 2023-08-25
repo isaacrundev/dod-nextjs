@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 import noImage from "@/public/img/no-image-icon-23494.png";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,6 +26,8 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { Skeleton } from "./ui/skeleton";
+import { SyncLoader } from "react-spinners";
 
 export const foodInputSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -63,7 +64,7 @@ const FoodData = () => {
   const { data: session } = useSession();
   const [input, setInput] = useState("");
   const [page, setPage] = useState(1);
-  const [data, setData] = useState<foodData>();
+  const [data, setData] = useState<foodData | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [importedFoodData, setImportedFoodData] = useState<
     FoodInputSchema | undefined
@@ -109,6 +110,9 @@ const FoodData = () => {
       console.log(error);
     }
   };
+  // useEffect(() => {
+  //   getFoodData(input, page);
+  // }, [page]);
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     try {
@@ -116,8 +120,7 @@ const FoodData = () => {
         `https://world.openfoodfacts.org/cgi/search.pl?action=process&json=true&search_terms=${searchTerm}&page=${currentPage}`
       );
       if (res.ok) {
-        const jsonData = await res.json();
-        setData(jsonData);
+        setData(await res.json());
         setIsLoading(false);
       }
     } catch (error) {
@@ -133,7 +136,8 @@ const FoodData = () => {
   const handleClick = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    getFoodData(input, page);
+    setData(undefined);
+    getFoodData(input, 1);
   };
 
   const handleFoodSizeOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -145,6 +149,10 @@ const FoodData = () => {
     setValue("carbs", (importedFoodData!.carbs / 100) * foodSizeInputValue);
     setValue("fats", (importedFoodData!.fats / 100) * foodSizeInputValue);
     setValue("protein", (importedFoodData!.protein / 100) * foodSizeInputValue);
+  };
+
+  const handleLoadMore = () => {
+    setPage(page + 1);
   };
 
   return (
@@ -277,6 +285,22 @@ const FoodData = () => {
           </Button>
         </form>
       </div>
+      {isLoading && (
+        <div className="flex items-center justify-center">
+          {/* <Card className="flex flex-col items-center py-5 mx-16 space-x-4 space-y-5">
+            <Skeleton className="w-20 h-20 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[250px]" />
+            </div>
+          </Card> */}
+          <SyncLoader color="#262E80" />
+        </div>
+      )}
       <div
         className={`${
           importedFoodData ? `hidden` : `flex`
@@ -284,84 +308,91 @@ const FoodData = () => {
       >
         {data
           ? data.products.map((item) => (
-              <Card
-                key={item._id}
-                className="flex flex-col items-center justify-between w-3/4 px-1 py-3 max-h-100"
-              >
-                <Image
-                  className="w-auto h-auto "
-                  width={100}
-                  height={100}
-                  src={item.image_small_url ? item.image_small_url : noImage}
-                  alt={item.product_name_en ? item.product_name_en : "no_alt"}
-                />
-                <CardHeader className="py-2 text-center">
-                  <CardTitle>
-                    {item.product_name_en
-                      ? item.product_name_en
-                      : item.product_name
-                      ? item.product_name
-                      : item.product_name_fr
-                      ? item.product_name_fr
-                      : "(No Food Name Found)"}
-                  </CardTitle>
-                  <CardDescription>
-                    Per {item.nutrition_data_prepared_per}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <ul>
-                    <li>Calories: {item.nutriments["energy-kcal_100g"]}</li>
-                    <li>carbs: {item.nutriments.carbohydrates_100g}</li>
-                    <li>Fats: {item.nutriments.fat_100g}</li>
-                    <li>Protein: {item.nutriments.proteins_100g}</li>
-                  </ul>
-                </CardContent>
-                {session && (
-                  <CardFooter className="p-3 pt-6">
-                    <Button
-                      type="button"
-                      className="h-10 text-white bg-black rounded-md w-28"
-                      onClick={() => {
-                        setImportedFoodData({
-                          foodName: item.product_name_en
-                            ? item.product_name_en
-                            : item.product_name
-                            ? item.product_name
-                            : item.product_name_fr
-                            ? item.product_name_fr
-                            : "(No Food Name Found)",
-                          protein: +item.nutriments.proteins_100g,
-                          fats: +item.nutriments.fat_100g,
-                          carbs: +item.nutriments.carbohydrates_100g,
-                          calories: +item.nutriments["energy-kcal_100g"],
-                          foodSize: +100,
-                        });
-                        setValue(
-                          "foodName",
-                          item.product_name_en
-                            ? item.product_name_en
-                            : item.product_name
-                            ? item.product_name
-                            : item.product_name_fr
-                            ? item.product_name_fr
-                            : "(No Food Name Found)"
-                        );
-                        setValue("protein", +item.nutriments.proteins_100g);
-                        setValue("fats", +item.nutriments.fat_100g);
-                        setValue("carbs", +item.nutriments.carbohydrates_100g);
-                        setValue(
-                          "calories",
-                          +item.nutriments["energy-kcal_100g"]
-                        );
-                        setValue("foodSize", +100);
-                      }}
-                    >
-                      Import
-                    </Button>
-                  </CardFooter>
-                )}
-              </Card>
+              <>
+                <Card
+                  key={item._id}
+                  className="flex flex-col items-center justify-between w-3/4 px-1 py-3 max-h-100"
+                >
+                  <Image
+                    className="w-auto h-auto "
+                    width={100}
+                    height={100}
+                    src={item.image_small_url ? item.image_small_url : noImage}
+                    alt={item.product_name_en ? item.product_name_en : "no_alt"}
+                    placeholder="blur"
+                    blurDataURL={item.image_small_url}
+                  />
+                  <CardHeader className="py-2 text-center">
+                    <CardTitle>
+                      {item.product_name_en
+                        ? item.product_name_en
+                        : item.product_name
+                        ? item.product_name
+                        : item.product_name_fr
+                        ? item.product_name_fr
+                        : "(No Food Name Found)"}
+                    </CardTitle>
+                    <CardDescription>
+                      Per {item.nutrition_data_prepared_per}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <ul>
+                      <li>Calories: {item.nutriments["energy-kcal_100g"]}</li>
+                      <li>carbs: {item.nutriments.carbohydrates_100g}</li>
+                      <li>Fats: {item.nutriments.fat_100g}</li>
+                      <li>Protein: {item.nutriments.proteins_100g}</li>
+                    </ul>
+                  </CardContent>
+                  {session && (
+                    <CardFooter className="p-3 pt-6">
+                      <Button
+                        type="button"
+                        className="h-10 text-white rounded-md bg-primary w-28"
+                        onClick={() => {
+                          setImportedFoodData({
+                            foodName: item.product_name_en
+                              ? item.product_name_en
+                              : item.product_name
+                              ? item.product_name
+                              : item.product_name_fr
+                              ? item.product_name_fr
+                              : "(No Food Name Found)",
+                            protein: +item.nutriments.proteins_100g,
+                            fats: +item.nutriments.fat_100g,
+                            carbs: +item.nutriments.carbohydrates_100g,
+                            calories: +item.nutriments["energy-kcal_100g"],
+                            foodSize: +100,
+                          });
+                          setValue(
+                            "foodName",
+                            item.product_name_en
+                              ? item.product_name_en
+                              : item.product_name
+                              ? item.product_name
+                              : item.product_name_fr
+                              ? item.product_name_fr
+                              : "(No Food Name Found)"
+                          );
+                          setValue("protein", +item.nutriments.proteins_100g);
+                          setValue("fats", +item.nutriments.fat_100g);
+                          setValue(
+                            "carbs",
+                            +item.nutriments.carbohydrates_100g
+                          );
+                          setValue(
+                            "calories",
+                            +item.nutriments["energy-kcal_100g"]
+                          );
+                          setValue("foodSize", +100);
+                        }}
+                      >
+                        Import
+                      </Button>
+                    </CardFooter>
+                  )}
+                </Card>
+              </>
             ))
           : !session && <p className="pt-32">Search result will appear here</p>}
       </div>
