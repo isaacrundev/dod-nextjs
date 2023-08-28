@@ -40,6 +40,7 @@ export default function DashboardPage() {
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
             <Calendar
+              required
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}

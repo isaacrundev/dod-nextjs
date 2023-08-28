@@ -28,6 +28,7 @@ import { Calendar } from "./ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { Skeleton } from "./ui/skeleton";
 import { SyncLoader } from "react-spinners";
+import { roundToSecondPlace } from "@/app/utils/utils";
 
 export const foodInputSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -188,6 +189,7 @@ const FoodData = () => {
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
+                  required
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
@@ -338,10 +340,23 @@ const FoodData = () => {
                   </CardHeader>
                   <CardContent className="p-0">
                     <ul>
-                      <li>Calories: {item.nutriments["energy-kcal_100g"]}</li>
-                      <li>carbs: {item.nutriments.carbohydrates_100g}</li>
-                      <li>Fats: {item.nutriments.fat_100g}</li>
-                      <li>Protein: {item.nutriments.proteins_100g}</li>
+                      <li>
+                        Calories:{" "}
+                        {roundToSecondPlace(
+                          item.nutriments["energy-kcal_100g"]
+                        )}
+                      </li>
+                      <li>
+                        carbs:{" "}
+                        {roundToSecondPlace(item.nutriments.carbohydrates_100g)}
+                      </li>
+                      <li>
+                        Fats: {roundToSecondPlace(item.nutriments.fat_100g)}
+                      </li>
+                      <li>
+                        Protein:{" "}
+                        {roundToSecondPlace(item.nutriments.proteins_100g)}
+                      </li>
                     </ul>
                   </CardContent>
                   {session && (
@@ -358,10 +373,16 @@ const FoodData = () => {
                               : item.product_name_fr
                               ? item.product_name_fr
                               : "(No Food Name Found)",
-                            protein: +item.nutriments.proteins_100g,
-                            fats: +item.nutriments.fat_100g,
-                            carbs: +item.nutriments.carbohydrates_100g,
-                            calories: +item.nutriments["energy-kcal_100g"],
+                            protein: roundToSecondPlace(
+                              item.nutriments.proteins_100g
+                            ),
+                            fats: roundToSecondPlace(item.nutriments.fat_100g),
+                            carbs: roundToSecondPlace(
+                              item.nutriments.carbohydrates_100g
+                            ),
+                            calories: roundToSecondPlace(
+                              item.nutriments["energy-kcal_100g"]
+                            ),
                             foodSize: +100,
                           });
                           setValue(
@@ -374,15 +395,25 @@ const FoodData = () => {
                               ? item.product_name_fr
                               : "(No Food Name Found)"
                           );
-                          setValue("protein", +item.nutriments.proteins_100g);
-                          setValue("fats", +item.nutriments.fat_100g);
+                          setValue(
+                            "protein",
+                            roundToSecondPlace(item.nutriments.proteins_100g)
+                          );
+                          setValue(
+                            "fats",
+                            roundToSecondPlace(item.nutriments.fat_100g)
+                          );
                           setValue(
                             "carbs",
-                            +item.nutriments.carbohydrates_100g
+                            roundToSecondPlace(
+                              item.nutriments.carbohydrates_100g
+                            )
                           );
                           setValue(
                             "calories",
-                            +item.nutriments["energy-kcal_100g"]
+                            roundToSecondPlace(
+                              item.nutriments["energy-kcal_100g"]
+                            )
                           );
                           setValue("foodSize", +100);
                         }}

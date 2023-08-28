@@ -87,6 +87,7 @@ export default function AddNewInputForm() {
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
+                  required
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}

@@ -17,12 +17,14 @@ interface Record extends FoodInputSchema {
   createAt: Date;
 }
 
+// const getSum = (total: number, number: number) => total + number;
+
 export default function HistoryTable({
   selectedDate,
 }: {
   selectedDate: string;
 }) {
-  const [records, setRecords] = useState<Record[] | null>();
+  const [records, setRecords] = useState<Record[] | null>([]);
 
   const fetchHistory = async (date: string) => {
     try {
@@ -44,36 +46,58 @@ export default function HistoryTable({
   return (
     <>
       <Table>
-        {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
+        {/* <TableCaption className="px-4 font-bold text-left mb-7">
+          Total: {records?.reduce((acc, curr) => acc + curr.protein, 0)}{" "}
+          {records?.reduce((acc, curr) => acc + curr.carbs, 0)}{" "}
+          {records?.reduce((acc, curr) => acc + curr.fats, 0)}{" "}
+          {records?.reduce((acc, curr) => acc + curr.calories, 0)}
+        </TableCaption> */}
         <TableHeader>
           <TableRow>
-            <TableHead>Food Name</TableHead>
-            <TableHead>Calories</TableHead>
-            {/* <TableHead>Carbs (g)</TableHead>
-            <TableHead>Fats (g)</TableHead>
-            <TableHead>Protein (g)</TableHead> */}
-            {/* <TableHead>Size (g)</TableHead> */}
+            <TableHead>Name</TableHead>
+            <TableHead>P</TableHead>
+            <TableHead>C</TableHead>
+            <TableHead>F</TableHead>
+            <TableHead>Cals</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {/* <TableCell>Sample junk food</TableCell>
-            <TableCell>256</TableCell> */}
           {records &&
             records.map((record) => (
               <TableRow key={record.id}>
                 <TableCell>{record.foodName}</TableCell>
+                <TableCell>{record.protein}</TableCell>
+                <TableCell>{record.carbs}</TableCell>
+                <TableCell>{record.fats}</TableCell>
                 <TableCell>{record.calories}</TableCell>
               </TableRow>
             ))}
+          {records?.length !== 0 && (
+            <TableRow>
+              <TableCell className="font-bold">Total</TableCell>
+              <TableCell className="font-bold">
+                {records?.reduce((acc, curr) => acc + curr.protein, 0)}
+              </TableCell>
+              <TableCell className="font-bold">
+                {records?.reduce((acc, curr) => acc + curr.carbs, 0)}
+              </TableCell>
+              <TableCell className="font-bold">
+                {records?.reduce((acc, curr) => acc + curr.fats, 0)}
+              </TableCell>
+              <TableCell className="font-bold">
+                {records?.reduce((acc, curr) => acc + curr.calories, 0)}
+              </TableCell>
+            </TableRow>
+          )}
           {records?.length === 0 && (
             <TableRow key="no-records">
               <TableCell>No Records</TableCell>
             </TableRow>
           )}
+
           {/* <TableRow key="no-records">
               <TableCell>No Records</TableCell>
             </TableRow> */}
-
           {/* <TableCell>20</TableCell>
             <TableCell>40</TableCell>
             <TableCell>300</TableCell> */}

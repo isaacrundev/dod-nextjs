@@ -47,7 +47,7 @@ const SignupForm = () => {
       });
       if (res.ok) {
         alert("Sign up Successfully!!");
-        router.push("/dashboard");
+        router.push("/login-signup");
       }
       return res.json();
     } catch (error) {
