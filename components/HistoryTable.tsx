@@ -46,12 +46,6 @@ export default function HistoryTable({
   return (
     <>
       <Table>
-        {/* <TableCaption className="px-4 font-bold text-left mb-7">
-          Total: {records?.reduce((acc, curr) => acc + curr.protein, 0)}{" "}
-          {records?.reduce((acc, curr) => acc + curr.carbs, 0)}{" "}
-          {records?.reduce((acc, curr) => acc + curr.fats, 0)}{" "}
-          {records?.reduce((acc, curr) => acc + curr.calories, 0)}
-        </TableCaption> */}
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
@@ -94,13 +88,6 @@ export default function HistoryTable({
               <TableCell>No Records</TableCell>
             </TableRow>
           )}
-
-          {/* <TableRow key="no-records">
-              <TableCell>No Records</TableCell>
-            </TableRow> */}
-          {/* <TableCell>20</TableCell>
-            <TableCell>40</TableCell>
-            <TableCell>300</TableCell> */}
         </TableBody>
       </Table>
     </>

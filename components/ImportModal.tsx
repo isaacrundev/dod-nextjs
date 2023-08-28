@@ -16,7 +16,7 @@ export default function ImportModal() {
         Choose from food data
       </DialogTrigger>
 
-      <DialogContent className="w-full overflow-auto h-5/6">
+      <DialogContent className="content-start w-full overflow-auto h-5/6">
         <FoodData />
       </DialogContent>
     </Dialog>

@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
@@ -12,7 +12,7 @@ const credentialsSchema = z.object({
   password: z.string().min(6),
 });
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -42,7 +42,7 @@ export const authOptions: AuthOptions = {
           TargetUser.password
         );
         if (!passwordIsMatch) {
-          throw new Error("User/password");
+          throw new Error("Incorrect username/password");
         }
         return TargetUser;
       },

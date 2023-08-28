@@ -26,7 +26,6 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
-import { Skeleton } from "./ui/skeleton";
 import { SyncLoader } from "react-spinners";
 import { roundToSecondPlace } from "@/app/utils/utils";
 
@@ -111,9 +110,6 @@ const FoodData = () => {
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   getFoodData(input, page);
-  // }, [page]);
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     try {
@@ -158,11 +154,11 @@ const FoodData = () => {
 
   return (
     <>
-      <div className="flex items-end justify-center">
-        <p className="text-xl">
-          {session ? "Choose from food data" : "Food Search"}
-        </p>
-      </div>
+      {/* <div className="mx-auto mt-5"> */}
+      <p className="mx-auto mt-5 text-xl">
+        {session ? "Choose from food data" : "Food Search"}
+      </p>
+      {/* </div> */}
 
       <form
         onSubmit={handleSubmit(onSave)}
@@ -277,29 +273,26 @@ const FoodData = () => {
 
       <div
         className={`${
-          importedFoodData ? `hidden` : `flex`
-        } justify-center my-5`}
+          importedFoodData
+            ? `hidden`
+            : // `flex justify-center my-3`
+              `mx-auto my-5`
+        } `}
       >
         <form onSubmit={handleClick} className="flex max-w-md gap-2">
           <Input type="text" onChange={handleInputChange} />
-          <Button disabled={isLoading} type="submit">
+          <Button disabled={isLoading || input === ""} type="submit">
             Search
           </Button>
         </form>
       </div>
+      {!isLoading && !data && (
+        <p className="flex items-center justify-center pt-10">
+          Search result will appear here
+        </p>
+      )}
       {isLoading && (
-        <div className="flex items-center justify-center">
-          {/* <Card className="flex flex-col items-center py-5 mx-16 space-x-4 space-y-5">
-            <Skeleton className="w-20 h-20 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[250px]" />
-              <Skeleton className="h-4 w-[250px]" />
-            </div>
-          </Card> */}
+        <div className="flex items-center justify-center pt-32">
           <SyncLoader color="#262E80" />
         </div>
       )}
@@ -308,124 +301,121 @@ const FoodData = () => {
           importedFoodData ? `hidden` : `flex`
         } flex-col items-center justify-center gap-6`}
       >
-        {data
-          ? data.products.map((item) => (
-              <>
-                <Card
-                  key={item._id}
-                  className="flex flex-col items-center justify-between w-3/4 px-1 py-3 max-h-100"
-                >
-                  <Image
-                    className="w-auto h-auto "
-                    width={100}
-                    height={100}
-                    src={item.image_small_url ? item.image_small_url : noImage}
-                    alt={item.product_name_en ? item.product_name_en : "no_alt"}
-                    placeholder="blur"
-                    blurDataURL={item.image_small_url}
-                  />
-                  <CardHeader className="py-2 text-center">
-                    <CardTitle>
-                      {item.product_name_en
-                        ? item.product_name_en
-                        : item.product_name
-                        ? item.product_name
-                        : item.product_name_fr
-                        ? item.product_name_fr
-                        : "(No Food Name Found)"}
-                    </CardTitle>
-                    <CardDescription>
-                      Per {item.nutrition_data_prepared_per}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <ul>
-                      <li>
-                        Calories:{" "}
-                        {roundToSecondPlace(
-                          item.nutriments["energy-kcal_100g"]
-                        )}
-                      </li>
-                      <li>
-                        carbs:{" "}
-                        {roundToSecondPlace(item.nutriments.carbohydrates_100g)}
-                      </li>
-                      <li>
-                        Fats: {roundToSecondPlace(item.nutriments.fat_100g)}
-                      </li>
-                      <li>
-                        Protein:{" "}
-                        {roundToSecondPlace(item.nutriments.proteins_100g)}
-                      </li>
-                    </ul>
-                  </CardContent>
-                  {session && (
-                    <CardFooter className="p-3 pt-6">
-                      <Button
-                        type="button"
-                        className="h-10 text-white rounded-md bg-primary w-28"
-                        onClick={() => {
-                          setImportedFoodData({
-                            foodName: item.product_name_en
-                              ? item.product_name_en
-                              : item.product_name
-                              ? item.product_name
-                              : item.product_name_fr
-                              ? item.product_name_fr
-                              : "(No Food Name Found)",
-                            protein: roundToSecondPlace(
-                              item.nutriments.proteins_100g
-                            ),
-                            fats: roundToSecondPlace(item.nutriments.fat_100g),
-                            carbs: roundToSecondPlace(
-                              item.nutriments.carbohydrates_100g
-                            ),
-                            calories: roundToSecondPlace(
-                              item.nutriments["energy-kcal_100g"]
-                            ),
-                            foodSize: +100,
-                          });
-                          setValue(
-                            "foodName",
-                            item.product_name_en
-                              ? item.product_name_en
-                              : item.product_name
-                              ? item.product_name
-                              : item.product_name_fr
-                              ? item.product_name_fr
-                              : "(No Food Name Found)"
-                          );
-                          setValue(
-                            "protein",
-                            roundToSecondPlace(item.nutriments.proteins_100g)
-                          );
-                          setValue(
-                            "fats",
-                            roundToSecondPlace(item.nutriments.fat_100g)
-                          );
-                          setValue(
-                            "carbs",
-                            roundToSecondPlace(
-                              item.nutriments.carbohydrates_100g
-                            )
-                          );
-                          setValue(
-                            "calories",
-                            roundToSecondPlace(
-                              item.nutriments["energy-kcal_100g"]
-                            )
-                          );
-                          setValue("foodSize", +100);
-                        }}
-                      >
-                        Import
-                      </Button>
-                    </CardFooter>
-                  )}
-                </Card>
-              </>
-            ))
-          : !session && <p className="pt-32">Search result will appear here</p>}
+        {data &&
+          data.products.map((item) => (
+            <>
+              <Card
+                key={item._id}
+                className="flex flex-col items-center justify-between w-5/6 px-1 py-3 max-h-100"
+              >
+                <Image
+                  className="w-auto h-auto "
+                  width={100}
+                  height={100}
+                  src={item.image_small_url ? item.image_small_url : noImage}
+                  alt={item.product_name_en ? item.product_name_en : "no_alt"}
+                  placeholder="blur"
+                  blurDataURL={item.image_small_url}
+                />
+                <CardHeader className="py-2 text-center">
+                  <CardTitle>
+                    {item.product_name_en
+                      ? item.product_name_en
+                      : item.product_name
+                      ? item.product_name
+                      : item.product_name_fr
+                      ? item.product_name_fr
+                      : "(No Food Name Found)"}
+                  </CardTitle>
+                  <CardDescription>
+                    Per {item.nutrition_data_prepared_per}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ul>
+                    <li>
+                      Calories:{" "}
+                      {roundToSecondPlace(item.nutriments["energy-kcal_100g"])}
+                    </li>
+                    <li>
+                      carbs:{" "}
+                      {roundToSecondPlace(item.nutriments.carbohydrates_100g)}
+                    </li>
+                    <li>
+                      Fats: {roundToSecondPlace(item.nutriments.fat_100g)}
+                    </li>
+                    <li>
+                      Protein:{" "}
+                      {roundToSecondPlace(item.nutriments.proteins_100g)}
+                    </li>
+                  </ul>
+                </CardContent>
+                {session && (
+                  <CardFooter className="p-3 pt-6">
+                    <Button
+                      type="button"
+                      className="h-10 text-white rounded-md bg-primary w-28"
+                      onClick={() => {
+                        setImportedFoodData({
+                          foodName: item.product_name_en
+                            ? item.product_name_en
+                            : item.product_name
+                            ? item.product_name
+                            : item.product_name_fr
+                            ? item.product_name_fr
+                            : "(No Food Name Found)",
+                          protein: +roundToSecondPlace(
+                            item.nutriments.proteins_100g
+                          ),
+                          fats: +roundToSecondPlace(item.nutriments.fat_100g),
+                          carbs: +roundToSecondPlace(
+                            item.nutriments.carbohydrates_100g
+                          ),
+                          calories: +roundToSecondPlace(
+                            item.nutriments["energy-kcal_100g"]
+                          ),
+                          foodSize: +100,
+                        });
+                        setValue(
+                          "foodName",
+                          item.product_name_en
+                            ? item.product_name_en
+                            : item.product_name
+                            ? item.product_name
+                            : item.product_name_fr
+                            ? item.product_name_fr
+                            : "(No Food Name Found)"
+                        );
+                        setValue(
+                          "protein",
+                          +roundToSecondPlace(item.nutriments.proteins_100g)
+                        );
+                        setValue(
+                          "fats",
+                          +roundToSecondPlace(item.nutriments.fat_100g)
+                        );
+                        setValue(
+                          "carbs",
+                          +roundToSecondPlace(
+                            item.nutriments.carbohydrates_100g
+                          )
+                        );
+                        setValue(
+                          "calories",
+                          +roundToSecondPlace(
+                            item.nutriments["energy-kcal_100g"]
+                          )
+                        );
+                        setValue("foodSize", +100);
+                      }}
+                    >
+                      Import
+                    </Button>
+                  </CardFooter>
+                )}
+              </Card>
+            </>
+          ))}
       </div>
     </>
   );
