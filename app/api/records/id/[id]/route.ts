@@ -1,20 +1,25 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function GET(req: Request) {
+export async function GET(
+  _req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const getUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
+    !params.id &&
+      NextResponse.json(
+        { message: "Missing query string(s)" },
+        { status: 400 }
+      );
 
-    const res = await prisma.record.findMany({
-      where: { userId: getUser?.id },
+    const res = await prisma.record.findUnique({
+      where: { id: params.id },
     });
 
     return NextResponse.json(res);
@@ -23,3 +28,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ message: error.message }, { status: 400 });
   }
 }
+
+// Oct12ForKota
+// Oct13ForHaruka

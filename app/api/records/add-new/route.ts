@@ -27,7 +27,26 @@ export const foodDataRequestSchema = z.object({
     .number()
     .positive()
     .int({ message: "Interger value only" }),
-  intakeDate: z.coerce.string(),
+  intakeDate: z.coerce
+    .string()
+    .refine((str) => str.length === 10, {
+      message: `Invalid "inTakeDate" length`,
+    })
+    .refine((str) => str[2] === "-" && str[5] === "-", {
+      message: `Invalid "inTakeDate" format`,
+    }),
+  // .refine(
+  //   (str) => {
+  //     +str.slice(0, 2) <= 12;
+  //   },
+  //   { message: `Month error` }
+  // )
+  // .refine(
+  //   (str) => {
+  //     +str.slice(3, 5) <= 31;
+  //   },
+  //   { message: `Day error` }
+  // ),
 });
 
 export async function POST(req: Request) {

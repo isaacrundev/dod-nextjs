@@ -1,6 +1,16 @@
 "use client";
 
 import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuIndicator,
@@ -15,6 +25,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FiMenu } from "react-icons/fi";
 
 const NavBar = () => {
   // const [isLogin, setIsLogin] = useState(false);
@@ -28,10 +39,89 @@ const NavBar = () => {
   };
   return (
     <>
-      <NavigationMenu>
+      <div className="flex justify-between px-5 py-4 shadow-sm">
+        <Link href="/" legacyBehavior passHref>
+          DoD
+        </Link>
+        <Sheet>
+          <SheetTrigger>
+            <FiMenu />
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              {/* <SheetTitle>Good day!</SheetTitle> */}
+              <SheetDescription>{session?.user?.email}</SheetDescription>
+            </SheetHeader>
+
+            <NavigationMenu className="mx-auto mt-5">
+              <NavigationMenuList>
+                <NavigationMenuItem className="flex flex-col ">
+                  {session ? (
+                    <>
+                      <Link href="/dashboard" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <SheetClose>DASHBOARD</SheetClose>
+                        </NavigationMenuLink>
+                      </Link>
+                      <Link href="/add-new" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <SheetClose>ADD NEW</SheetClose>
+                        </NavigationMenuLink>
+                      </Link>
+                      <NavigationMenuLink
+                        className={
+                          navigationMenuTriggerStyle() + " hover:cursor-pointer"
+                        }
+                        onClick={handleSignOut}
+                      >
+                        <SheetClose>LOG OUT</SheetClose>
+                      </NavigationMenuLink>
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <SheetClose>HOME</SheetClose>
+                        </NavigationMenuLink>
+                      </Link>
+                      <Link href="/food-data" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <SheetClose>FOOD SEARCH</SheetClose>
+                        </NavigationMenuLink>
+                      </Link>
+                      <Link href="/login-signup" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <SheetClose>LOGIN / SIGNUP</SheetClose>
+                        </NavigationMenuLink>
+                      </Link>
+                    </>
+                  )}
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
+  );
+};
+
+export default NavBar;
+
+{
+  /* <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem className="space-x-3">
-            {/* {session?.user ? ( */}
             {session ? (
               <>
                 <Link href="/dashboard" legacyBehavior passHref>
@@ -44,7 +134,6 @@ const NavBar = () => {
                     Add New
                   </NavigationMenuLink>
                 </Link>
-                {/* <Link href="/logout" legacyBehavior passHref> */}
                 <NavigationMenuLink
                   className={
                     navigationMenuTriggerStyle() + " hover:cursor-pointer"
@@ -53,7 +142,6 @@ const NavBar = () => {
                 >
                   LOG OUT
                 </NavigationMenuLink>
-                {/* </Link> */}
               </>
             ) : (
               <>
@@ -76,22 +164,5 @@ const NavBar = () => {
             )}
           </NavigationMenuItem>
         </NavigationMenuList>
-      </NavigationMenu>
-    </>
-  );
-};
-
-export default NavBar;
-
-{
-  /* <NavigationMenu>
-  <NavigationMenuList>
-    <NavigationMenuItem>
-      <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-      <NavigationMenuContent>
-        <NavigationMenuLink>Link</NavigationMenuLink>
-      </NavigationMenuContent>
-    </NavigationMenuItem>
-  </NavigationMenuList>
-</NavigationMenu>; */
+      </NavigationMenu> */
 }

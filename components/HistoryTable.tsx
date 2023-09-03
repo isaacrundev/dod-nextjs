@@ -1,5 +1,6 @@
 "use client";
 
+import { FiEdit } from "react-icons/fi";
 import {
   Table,
   TableBody,
@@ -11,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { FoodInputSchema } from "./FoodData";
 import { useEffect, useState } from "react";
+import { Button } from "react-day-picker";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 interface Record extends FoodInputSchema {
   id: string;
@@ -28,7 +31,7 @@ export default function HistoryTable({
 
   const fetchHistory = async (date: string) => {
     try {
-      const res = await fetch(`/api/records/${date}`, {
+      const res = await fetch(`/api/records/date/${date}`, {
         method: "GET",
       });
 
@@ -53,6 +56,7 @@ export default function HistoryTable({
             <TableHead>C</TableHead>
             <TableHead>F</TableHead>
             <TableHead>Cals</TableHead>
+            {/* <TableHead>Edit</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -64,6 +68,14 @@ export default function HistoryTable({
                 <TableCell>{record.carbs}</TableCell>
                 <TableCell>{record.fats}</TableCell>
                 <TableCell>{record.calories}</TableCell>
+                {/* <TableCell>
+                  <Dialog>
+                    <DialogTrigger>
+                      <FiEdit />
+                    </DialogTrigger>
+                    <DialogContent className="overflow-auto h-5/6"></DialogContent>
+                  </Dialog>
+                </TableCell> */}
               </TableRow>
             ))}
           {records?.length !== 0 && (

@@ -13,7 +13,10 @@ export async function GET(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
     !params.date &&
-      NextResponse.json({ message: "Missing query strings" }, { status: 400 });
+      NextResponse.json(
+        { message: "Missing query string(s)" },
+        { status: 400 }
+      );
 
     const getUser = await prisma.user.findUnique({
       where: { email: session.user.email },

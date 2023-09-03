@@ -38,6 +38,6 @@ model Record {
   createAt   DateTime @default(now())
   // updateAt   DateTime?
   userId     String 
-  intakeDate String
+  intakeDate String @db.VarChar(10)
   user       User     @relation(fields: [userId], references: [id])
 }

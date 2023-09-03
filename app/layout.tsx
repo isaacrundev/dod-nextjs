@@ -18,7 +18,8 @@ export default function RootLayout({
     <html lang="en">
       <Providers>
         <body className={inter.className}>
-          <header className="flex items-center justify-center shadow-sm">
+          {/* <header className="flex items-center justify-center shadow-sm"> */}
+          <header>
             <nav className="my-2">
               <NavBar />
             </nav>

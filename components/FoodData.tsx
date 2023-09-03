@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,8 @@ const FoodData = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const [input, setInput] = useState("");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
+  const [pageCount, setPageCount] = useState<number>(0);
   const [data, setData] = useState<foodData | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [importedFoodData, setImportedFoodData] = useState<
@@ -112,6 +113,7 @@ const FoodData = () => {
   };
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
+    setIsLoading(true);
     try {
       const res = await fetch(
         `https://world.openfoodfacts.org/cgi/search.pl?action=process&json=true&search_terms=${searchTerm}&page=${currentPage}`
@@ -130,11 +132,10 @@ const FoodData = () => {
     setInput(e.target.value);
   };
 
-  const handleClick = (e: FormEvent<HTMLFormElement>) => {
+  const handleSearchClick = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     setData(undefined);
-    getFoodData(input, 1);
+    setPage(1);
   };
 
   const handleFoodSizeOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -148,14 +149,20 @@ const FoodData = () => {
     setValue("protein", (importedFoodData!.protein / 100) * foodSizeInputValue);
   };
 
-  const handleLoadMore = () => {
-    setPage(page + 1);
-  };
+  useEffect(() => {
+    page >= 1 && getFoodData(input, page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
+  useEffect(() => {
+    data && setPageCount(data.page_count);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return (
-    <>
+    <div>
       {/* <div className="mx-auto mt-5"> */}
-      <p className="mx-auto mt-5 text-xl">
+      <p className="mt-5 text-xl text-center">
         {session ? "Choose from food data" : "Food Search"}
       </p>
       {/* </div> */}
@@ -279,7 +286,7 @@ const FoodData = () => {
               `mx-auto my-5`
         } `}
       >
-        <form onSubmit={handleClick} className="flex max-w-md gap-2">
+        <form onSubmit={handleSearchClick} className="flex max-w-md gap-2">
           <Input type="text" onChange={handleInputChange} />
           <Button disabled={isLoading || input === ""} type="submit">
             Search
@@ -416,8 +423,28 @@ const FoodData = () => {
               </Card>
             </>
           ))}
+        <div className="flex gap-2">
+          <Button
+            className={`text-white bg-slate-500 ${!data && `hidden`}`}
+            onClick={() => {
+              setPage(page - 1);
+            }}
+            disabled={isLoading || page <= 1}
+          >
+            Prev
+          </Button>
+          <Button
+            className={`text-white bg-slate-500 ${!data && `hidden`}`}
+            onClick={() => {
+              setPage(page + 1);
+            }}
+            disabled={isLoading || pageCount !== 24}
+          >
+            Next
+          </Button>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

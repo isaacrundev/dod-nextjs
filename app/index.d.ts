@@ -14,5 +14,6 @@ export type Products = {
 };
 
 export type foodData = {
+  page_count: number;
   products: Products[];
 };
