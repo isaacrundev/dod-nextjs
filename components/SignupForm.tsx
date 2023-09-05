@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 const formSchema = z
   .object({
@@ -47,7 +48,8 @@ const SignupForm = () => {
       });
       if (res.ok) {
         alert("Sign up Successfully!!");
-        router.push("/login-signup");
+        await signIn("credentials", { ...data, redirect: false });
+        router.push("/dashboard");
       }
       return res.json();
     } catch (error) {
