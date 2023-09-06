@@ -135,7 +135,7 @@ const FoodData = () => {
   const handleSearchClick = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setData(undefined);
-    setPage(1);
+    getFoodData(input, 1);
   };
 
   const handleFoodSizeOnChange = (e: ChangeEvent<HTMLInputElement>) => {

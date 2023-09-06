@@ -24,7 +24,7 @@ export default function RootLayout({
               <NavBar />
             </nav>
           </header>
-          <main className="max-w-md mx-auto mt-8 px-7">{children}</main>
+          <main>{children}</main>
         </body>
       </Providers>
     </html>
