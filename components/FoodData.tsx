@@ -283,10 +283,13 @@ const FoodData = () => {
           importedFoodData
             ? `hidden`
             : // `flex justify-center my-3`
-              `mx-auto my-5`
+              `mx-auto my-8`
         } `}
       >
-        <form onSubmit={handleSearchClick} className="flex max-w-md gap-2">
+        <form
+          onSubmit={handleSearchClick}
+          className="flex max-w-sm gap-2 mx-auto"
+        >
           <Input type="text" onChange={handleInputChange} />
           <Button disabled={isLoading || input === ""} type="submit">
             Search
