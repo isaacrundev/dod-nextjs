@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Label } from "./ui/label";
-import { foodData } from "@/app";
+import { FoodData } from "@/app";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -65,7 +65,7 @@ const FoodData = () => {
   const [input, setInput] = useState("");
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState<number>(0);
-  const [data, setData] = useState<foodData | undefined>();
+  const [data, setData] = useState<FoodData | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [importedFoodData, setImportedFoodData] = useState<
     FoodInputSchema | undefined
