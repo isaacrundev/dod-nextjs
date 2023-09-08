@@ -5,7 +5,7 @@ import lifeManagementPic from "@/public/img/Life-Management.png";
 
 const Home = () => {
   return (
-    <div className="flex flex-col items-center justify-center gap-16 py-10 mx-auto md:px-32">
+    <div className="flex flex-col items-center justify-center max-w-5xl gap-16 mx-auto">
       <div className="flex flex-col items-center justify-center gap-20 md:flex-row-reverse">
         <div className="relative w-64">
           <Image alt="Hands-Phone" src={handsPhonePic} placeholder="blur" />

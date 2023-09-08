@@ -13,7 +13,7 @@ export type Products = {
   };
 };
 
-export type foodData = {
+export type FoodData = {
   page_count: number;
   products: Products[];
 };
