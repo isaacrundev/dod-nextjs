@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const formSchema = z
   .object({
@@ -28,6 +29,7 @@ type FormInputs = {
 
 const SignupForm = () => {
   const router = useRouter();
+  const [error, setError] = useState("");
   const {
     register,
     handleSubmit,
@@ -50,10 +52,15 @@ const SignupForm = () => {
         alert("Sign up Successfully!!");
         await signIn("credentials", { ...data, redirect: false });
         router.push("/dashboard");
+      } else if (res.status === 409) {
+        alert("Email already existed!");
+      } else if (res.status === 400) {
+        alert("Missing field(s)!");
       }
-      return res.json();
-    } catch (error) {
-      console.log(error);
+
+      // return res.json();
+    } catch (error: any) {
+      console.log(error.message);
     }
   };
 
