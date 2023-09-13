@@ -27,6 +27,8 @@ type FormInputs = {
   confirmPassword: string;
 };
 
+type ErrMsg = { error: string };
+
 const SignupForm = () => {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -52,11 +54,15 @@ const SignupForm = () => {
         alert("Sign up Successfully!!");
         await signIn("credentials", { ...data, redirect: false });
         router.push("/dashboard");
-      } else if (res.status === 409) {
-        alert("Email already existed!");
-      } else if (res.status === 400) {
-        alert("Missing field(s)!");
+      } else {
+        const errMsg: ErrMsg = await res.json();
+        alert(errMsg.error);
       }
+      // else if (res.status === 409) {
+      //   alert("Email already existed!");
+      // } else if (res.status === 400) {
+      //   alert("Missing field(s)!");
+      // }
 
       // return res.json();
     } catch (error: any) {

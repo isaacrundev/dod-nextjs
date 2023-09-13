@@ -14,12 +14,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const { email, password } = SignupSchema.parse(reqBody);
 
     if (!email || !password)
-      return NextResponse.json("Missing field(s)!", { status: 400 });
+      return NextResponse.json({ error: "Missing field(s)!" }, { status: 400 });
     // throw new Error("Missing field(s)!!");
 
     const emailExist = await prisma.user.findUnique({ where: { email } });
     if (emailExist)
-      return NextResponse.json("Email already existed!", { status: 409 });
+      return NextResponse.json(
+        { error: "Email already existed!" },
+        { status: 409 }
+      );
     // throw new Error("Email already existed!");
     // new NextResponse(JSON.stringify({ message: "Email already existed!" }), {
     //   status: 409,
@@ -34,7 +37,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     });
     return NextResponse.json(newUser);
   } catch (error: any) {
-    console.error(error);
+    console.error(error.message);
     return NextResponse.json("Something went wrong!", {
       status: 500,
     });
