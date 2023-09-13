@@ -8,20 +8,22 @@ const SignupSchema = z.object({
   password: string().min(6),
 });
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const reqBody = await req.json();
     const { email, password } = SignupSchema.parse(reqBody);
 
-    if (!email || !password) {
-      return new NextResponse(`Missing field(s)!!`, {
-        status: 400,
-      });
-    }
+    if (!email || !password)
+      return NextResponse.json("Missing field(s)!", { status: 400 });
+    // throw new Error("Missing field(s)!!");
 
     const emailExist = await prisma.user.findUnique({ where: { email } });
     if (emailExist)
-      return new NextResponse("Email already exists", { status: 400 });
+      return NextResponse.json("Email already existed!", { status: 409 });
+    // throw new Error("Email already existed!");
+    // new NextResponse(JSON.stringify({ message: "Email already existed!" }), {
+    //   status: 409,
+    // });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await prisma.user.create({
@@ -32,6 +34,9 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(newUser);
   } catch (error: any) {
-    return new NextResponse(error.message, { status: 500 });
+    console.error(error);
+    return NextResponse.json("Something went wrong!", {
+      status: 500,
+    });
   }
 }
