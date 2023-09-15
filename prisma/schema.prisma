@@ -11,21 +11,21 @@ model User {
   id       String   @id @default(uuid())
   email    String   @unique
   password String
-  // profile Profile?
+  profile  Profile?
   records  Record[]
 
   @@index([email])
 }
 
-// model Profile {
-//   id       String   @id @default(uuid())
-//   userId String @unique
-//   user User @relation(fields: [userId],references: [id])
-//   tdee     Int?
-//   name     String? 
+model Profile {
+  id       String   @id @default(uuid())
+  userId   String @unique
+  user     User @relation(fields: [userId],references: [id])
+  tdee     Int?
+  name     String?
 
-//   @@index([id])
-// }
+  @@index([id])
+}
 
 model Record {
   id         String   @id @default(uuid())

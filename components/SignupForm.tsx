@@ -9,6 +9,7 @@ import { Label } from "@radix-ui/react-label";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { ErrMsg } from "@/app";
 
 const formSchema = z
   .object({
@@ -26,8 +27,6 @@ type FormInputs = {
   password: string;
   confirmPassword: string;
 };
-
-type ErrMsg = { error: string };
 
 const SignupForm = () => {
   const router = useRouter();
