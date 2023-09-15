@@ -17,3 +17,5 @@ export type FoodData = {
   page_count: number;
   products: Products[];
 };
+
+export type ErrMsg = { error: string };
