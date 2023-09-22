@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import AddNewInputForm from "./AddNewInputForm";
+import AddNewRecordForm from "./AddNewRecordForm";
 
 export default function InputModal() {
   return (
@@ -16,7 +17,8 @@ export default function InputModal() {
         Input by your own
       </DialogTrigger>
       <DialogContent className="overflow-auto h-5/6">
-        <AddNewInputForm />
+        {/* <AddNewInputForm /> */}
+        <AddNewRecordForm item={null} />
       </DialogContent>
     </Dialog>
   );
