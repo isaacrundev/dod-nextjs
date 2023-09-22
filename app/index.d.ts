@@ -1,10 +1,10 @@
-export type Products = {
+export type Product = {
   _id: string;
   product_name: string;
   product_name_en: string;
   product_name_fr: string;
   image_small_url: string;
-  nutrition_data_prepared_per: string;
+  product_quantity: string;
   nutriments: {
     carbohydrates_100g: string;
     fat_100g: string;
@@ -13,9 +13,9 @@ export type Products = {
   };
 };
 
-export type FoodData = {
+export type FetchedFoodData = {
   page_count: number;
-  products: Products[];
+  products: Product[];
 };
 
 export type ErrMsg = { error: string };

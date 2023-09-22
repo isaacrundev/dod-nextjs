@@ -2,6 +2,8 @@
 
 import AddNewModal from "@/components/ImportModal";
 import InputModal from "@/components/InputModal";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function AddNewPage() {
   return (
@@ -13,7 +15,12 @@ export default function AddNewPage() {
         <p>Option 1:</p>
         <InputModal />
         <p>Option 2:</p>
-        <AddNewModal />
+        {/* <AddNewModal /> */}
+        <Button className="px-3 py-2 text-white rounded-lg bg-primary text-md">
+          <Link href="/add-new/from-food-data">
+            Choose from Open Food Facts
+          </Link>
+        </Button>
       </div>
     </div>
   );

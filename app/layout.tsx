@@ -1,7 +1,8 @@
 import NavBar from "@/components/NavBar";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import Providers from "@/components/Providers";
+import AuthProviders from "@/components/AuthProviders";
+import ReduxProvider from "./rtk/Provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,17 +17,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Providers>
-        <body className={inter.className}>
-          {/* <header className="flex items-center justify-center shadow-sm"> */}
-          <header>
-            <nav className="my-2">
-              <NavBar />
-            </nav>
-          </header>
-          <main className="px-20 py-5">{children}</main>
-        </body>
-      </Providers>
+      <ReduxProvider>
+        <AuthProviders>
+          <body className={inter.className}>
+            {/* <header className="flex items-center justify-center shadow-sm"> */}
+            <header>
+              <nav className="my-2">
+                <NavBar />
+              </nav>
+            </header>
+            <main className="px-10 py-5 md:px-20">{children}</main>
+          </body>
+        </AuthProviders>
+      </ReduxProvider>
     </html>
   );
 }
