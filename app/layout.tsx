@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import AuthProviders from "@/components/AuthProviders";
 import ReduxProvider from "./rtk/Provider";
+import { ReactNode } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,19 +11,15 @@ export const metadata = {
   title: "Diet or Die",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <ReduxProvider>
         <AuthProviders>
           <body className={inter.className}>
-            {/* <header className="flex items-center justify-center shadow-sm"> */}
             <header>
-              <nav className="my-2">
+              {/* <nav className="my-2"> */}
+              <nav>
                 <NavBar />
               </nav>
             </header>

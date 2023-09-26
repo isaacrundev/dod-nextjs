@@ -1,5 +1,6 @@
 "use client";
 
+import dodLogo from "@/public/img/icons/dod-logo.png";
 import {
   Sheet,
   SheetClose,
@@ -25,6 +26,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiMenu } from "react-icons/fi";
+import Image from "next/image";
 
 const NavBar = () => {
   const { data: session } = useSession();
@@ -37,9 +39,9 @@ const NavBar = () => {
 
   return (
     <>
-      <div className="flex justify-between px-5 py-4 shadow-sm ">
+      <div className="flex items-center justify-between px-5 py-4 shadow-sm md:py-6 md:px-20">
         <Link href="/" legacyBehavior passHref>
-          DoD
+          <Image src={dodLogo} alt="dod-logo" width={60} height={60} />
         </Link>
         <NavigationMenu className="hidden md:block">
           <NavigationMenuList>
