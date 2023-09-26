@@ -24,9 +24,6 @@ const draw = () => {
 };
 
 const UnauthenticatedPage = () => {
-  useEffect(() => {
-    console.log(draw());
-  });
   return (
     <>
       <div className="pt-8 space-y-5 text-center">

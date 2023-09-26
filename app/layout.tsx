@@ -18,7 +18,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <AuthProviders>
           <body className={inter.className}>
             <header>
-              {/* <nav className="my-2"> */}
               <nav>
                 <NavBar />
               </nav>

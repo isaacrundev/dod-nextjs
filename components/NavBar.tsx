@@ -41,7 +41,13 @@ const NavBar = () => {
     <>
       <div className="flex items-center justify-between px-5 py-4 shadow-sm md:py-6 md:px-20">
         <Link href="/" legacyBehavior passHref>
-          <Image src={dodLogo} alt="dod-logo" width={60} height={60} />
+          <Image
+            src={dodLogo}
+            alt="dod-logo"
+            width={60}
+            height={60}
+            className="hover:cursor-pointer"
+          />
         </Link>
         <NavigationMenu className="hidden md:block">
           <NavigationMenuList>
@@ -110,23 +116,23 @@ const NavBar = () => {
                 <SheetDescription>{session?.user?.email}</SheetDescription>
               </SheetHeader>
 
-              <NavigationMenu className="mx-auto mt-5">
+              <NavigationMenu>
                 <NavigationMenuList>
-                  <NavigationMenuItem className="flex flex-col ">
+                  <NavigationMenuItem className="flex flex-col">
                     {session ? (
                       <>
                         <Link href="/dashboard" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
                           >
-                            <SheetClose>DASHBOARD</SheetClose>
+                            <SheetClose>Dashboard</SheetClose>
                           </NavigationMenuLink>
                         </Link>
                         <Link href="/add-new" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
                           >
-                            <SheetClose>ADD NEW</SheetClose>
+                            <SheetClose>Add New</SheetClose>
                           </NavigationMenuLink>
                         </Link>
                         <NavigationMenuLink
@@ -136,7 +142,7 @@ const NavBar = () => {
                           }
                           onClick={handleSignOut}
                         >
-                          <SheetClose>LOG OUT</SheetClose>
+                          <SheetClose>Log out</SheetClose>
                         </NavigationMenuLink>
                       </>
                     ) : (
@@ -145,21 +151,21 @@ const NavBar = () => {
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
                           >
-                            <SheetClose>HOME</SheetClose>
+                            <SheetClose>Home</SheetClose>
                           </NavigationMenuLink>
                         </Link>
                         <Link href="/food-data" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
                           >
-                            <SheetClose>FOOD SEARCH</SheetClose>
+                            <SheetClose>Food Search</SheetClose>
                           </NavigationMenuLink>
                         </Link>
                         <Link href="/login-signup" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
                           >
-                            <SheetClose>LOGIN / SIGNUP</SheetClose>
+                            <SheetClose>Login/Signup</SheetClose>
                           </NavigationMenuLink>
                         </Link>
                       </>
