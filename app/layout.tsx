@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import AuthProviders from "@/components/AuthProviders";
 import ReduxProvider from "./rtk/Provider";
 import { ReactNode } from "react";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </nav>
             </header>
             <main className="px-10 py-5 md:px-20">{children}</main>
+            {/* <footer>
+              <Footer />
+            </footer> */}
           </body>
         </AuthProviders>
       </ReduxProvider>

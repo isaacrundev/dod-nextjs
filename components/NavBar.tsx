@@ -74,7 +74,7 @@ const NavBar = () => {
                     }
                     onClick={handleSignOut}
                   >
-                    LOG OUT
+                    Logout
                   </NavigationMenuLink>
                 </>
               ) : (
@@ -97,7 +97,7 @@ const NavBar = () => {
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
                     >
-                      LOGIN / SIGNUP
+                      Login/Signup
                     </NavigationMenuLink>
                   </Link>
                 </>
@@ -142,7 +142,7 @@ const NavBar = () => {
                           }
                           onClick={handleSignOut}
                         >
-                          <SheetClose>Log out</SheetClose>
+                          <SheetClose>Logout</SheetClose>
                         </NavigationMenuLink>
                       </>
                     ) : (

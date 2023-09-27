@@ -1,35 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Diet or Die
 
-## Getting Started
+Live Deployed url: [https://dod-nextjs.vercel.app](https://dod-nextjs.vercel.app)
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+This web application is for recording diet data. After registration, users are able to add their own data manually or by using data from [Open Food Facts](https://world.openfoodfacts.org/).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Libraries
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Web Hosting: [Vercel](http://vercel.com/)
+- Framework: [Next.js](https://nextjs.org/) with [TypeScript](https://www.typescriptlang.org/)
+- Database: PostgreSQL manipulated by [Prisma](https://www.prisma.io/nextjs)
+- Authentication: [Auth.js (NextAuth)](https://authjs.dev/)
+- Styling: [Shadcn/ui](https://ui.shadcn.com/) with [TailwindCSS](https://tailwindcss.com/)
+- Form control & Form validation: [React Hook Form](https://www.react-hook-form.com/) with [Zod](https://zod.dev/)
+- Routing: Next.js App Router
+- API: [Open Food Facts](https://world.openfoodfacts.org/)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Description
 
-## Learn More
+### Sign Up
 
-To learn more about Next.js, take a look at the following resources:
+### Login
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Logout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Food Data Search
 
-## Deploy on Vercel
+### Dashboard
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Add New
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# dod-nextjs
+#### Input By Your Own
+
+#### Choose From Open Food Facts
