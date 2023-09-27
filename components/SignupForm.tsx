@@ -29,6 +29,7 @@ type FormInputs = {
 };
 
 const SignupForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [error, setError] = useState("");
   const {
@@ -41,6 +42,7 @@ const SignupForm = () => {
   });
 
   const onSubmit = async (data: FormInputs) => {
+    setIsLoading(true);
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
@@ -56,6 +58,7 @@ const SignupForm = () => {
       } else {
         const errMsg: ErrMsg = await res.json();
         alert(errMsg.error);
+        setIsLoading(false);
       }
       // else if (res.status === 409) {
       //   alert("Email already existed!");
@@ -105,7 +108,7 @@ const SignupForm = () => {
             <p className="text-red-500 ">{errors.confirmPassword.message}</p>
           )}
         </div>
-        <Button className="w-full mt-5" type="submit">
+        <Button className="w-full mt-5" type="submit" disabled={isLoading}>
           Sign Up
         </Button>
       </form>

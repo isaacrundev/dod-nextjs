@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string(),
+  password: z.string().min(6),
 });
 
 type FormInputs = {
@@ -20,6 +21,7 @@ type FormInputs = {
 };
 
 const LoginForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const {
     register,
@@ -36,10 +38,12 @@ const LoginForm = () => {
     //   body: JSON.stringify(data),
     // });
     // const result = await res.json();
+    setIsLoading(true);
     const res = await signIn("credentials", { ...data, redirect: false });
 
     if (res?.error) {
       alert(res.error);
+      setIsLoading(false);
     } else {
       alert("Login successfully!!");
       router.push("/dashboard");
@@ -71,7 +75,7 @@ const LoginForm = () => {
             <p className="text-red-500 ">{errors.password.message}</p>
           )}
         </div>
-        <Button className="w-full mt-5" type="submit">
+        <Button className="w-full mt-5" type="submit" disabled={isLoading}>
           Login
         </Button>
       </form>
