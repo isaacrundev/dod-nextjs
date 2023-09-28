@@ -39,7 +39,7 @@ const NavBar = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between px-5 py-4 shadow-sm md:py-6 md:px-20">
+      <div className="flex items-center justify-between px-5 py-4 shadow-sm md:px-20 md:py-0">
         <Link href="/" legacyBehavior passHref>
           <Image
             src={dodLogo}
@@ -50,10 +50,10 @@ const NavBar = () => {
           />
         </Link>
         <NavigationMenu className="hidden md:block">
-          <NavigationMenuList>
-            <NavigationMenuItem className="space-x-3">
-              {session ? (
-                <>
+          <NavigationMenuList className="flex items-center h-20 gap-3">
+            {session ? (
+              <>
+                <NavigationMenuItem>
                   <Link href="/dashboard" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
@@ -61,6 +61,8 @@ const NavBar = () => {
                       Dashboard
                     </NavigationMenuLink>
                   </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
                   <Link href="/add-new" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
@@ -68,6 +70,8 @@ const NavBar = () => {
                       Add New
                     </NavigationMenuLink>
                   </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
                   <NavigationMenuLink
                     className={
                       navigationMenuTriggerStyle() + " hover:cursor-pointer"
@@ -76,9 +80,11 @@ const NavBar = () => {
                   >
                     Logout
                   </NavigationMenuLink>
-                </>
-              ) : (
-                <>
+                </NavigationMenuItem>
+              </>
+            ) : (
+              <>
+                <NavigationMenuItem>
                   <Link href="/" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
@@ -86,6 +92,8 @@ const NavBar = () => {
                       Home
                     </NavigationMenuLink>
                   </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
                   <Link href="/food-data" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
@@ -93,6 +101,8 @@ const NavBar = () => {
                       Food Data
                     </NavigationMenuLink>
                   </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
                   <Link href="/login-signup" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
@@ -100,15 +110,15 @@ const NavBar = () => {
                       Login/Signup
                     </NavigationMenuLink>
                   </Link>
-                </>
-              )}
-            </NavigationMenuItem>
+                </NavigationMenuItem>
+              </>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger>
-              <FiMenu />
+              <FiMenu className="w-8 h-8" />
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
@@ -116,11 +126,11 @@ const NavBar = () => {
                 <SheetDescription>{session?.user?.email}</SheetDescription>
               </SheetHeader>
 
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem className="flex flex-col">
-                    {session ? (
-                      <>
+              <NavigationMenu className="pt-10 mx-auto">
+                <NavigationMenuList className="flex flex-col gap-5">
+                  {session ? (
+                    <>
+                      <NavigationMenuItem>
                         <Link href="/dashboard" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
@@ -128,6 +138,8 @@ const NavBar = () => {
                             <SheetClose>Dashboard</SheetClose>
                           </NavigationMenuLink>
                         </Link>
+                      </NavigationMenuItem>
+                      <NavigationMenuItem>
                         <Link href="/add-new" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
@@ -135,6 +147,8 @@ const NavBar = () => {
                             <SheetClose>Add New</SheetClose>
                           </NavigationMenuLink>
                         </Link>
+                      </NavigationMenuItem>
+                      <NavigationMenuItem>
                         <NavigationMenuLink
                           className={
                             navigationMenuTriggerStyle() +
@@ -144,9 +158,11 @@ const NavBar = () => {
                         >
                           <SheetClose>Logout</SheetClose>
                         </NavigationMenuLink>
-                      </>
-                    ) : (
-                      <>
+                      </NavigationMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <NavigationMenuItem>
                         <Link href="/" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
@@ -154,6 +170,8 @@ const NavBar = () => {
                             <SheetClose>Home</SheetClose>
                           </NavigationMenuLink>
                         </Link>
+                      </NavigationMenuItem>
+                      <NavigationMenuItem>
                         <Link href="/food-data" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
@@ -161,6 +179,8 @@ const NavBar = () => {
                             <SheetClose>Food Search</SheetClose>
                           </NavigationMenuLink>
                         </Link>
+                      </NavigationMenuItem>
+                      <NavigationMenuItem>
                         <Link href="/login-signup" legacyBehavior passHref>
                           <NavigationMenuLink
                             className={navigationMenuTriggerStyle()}
@@ -168,9 +188,9 @@ const NavBar = () => {
                             <SheetClose>Login/Signup</SheetClose>
                           </NavigationMenuLink>
                         </Link>
-                      </>
-                    )}
-                  </NavigationMenuItem>
+                      </NavigationMenuItem>
+                    </>
+                  )}
                 </NavigationMenuList>
               </NavigationMenu>
             </SheetContent>

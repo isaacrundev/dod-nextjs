@@ -23,10 +23,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <NavBar />
               </nav>
             </header>
-            <main className="px-10 py-5 md:px-20">{children}</main>
-            {/* <footer>
+            <main className="min-h-screen px-10 py-5 md:px-20">{children}</main>
+            <footer>
               <Footer />
-            </footer> */}
+            </footer>
           </body>
         </AuthProviders>
       </ReduxProvider>

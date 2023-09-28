@@ -2,11 +2,18 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <div className="flex items-center justify-center h-32 bg-orange-400">
+    <div className="flex flex-col items-center justify-center h-20 gap-3 bg-blue-400 md:flex-row ">
       <div className="flex gap-1">
-        <p className="text-white ">Developed by</p>
-        <Link href="https://portfolio-sigma-ten-72.vercel.app/">
-          <p>Isaac Wu</p>
+        <p className="text-xs ">Developed by</p>
+        <Link href="https://portfolio-sigma-ten-72.vercel.app/" target="_blank">
+          <p className="text-xs text-white">Isaac Wu</p>
+        </Link>
+      </div>{" "}
+      <div className="hidden text-xs md:block">| </div>{" "}
+      <div className="flex gap-1 text-xs">
+        <p className="text-xs ">API provided by</p>
+        <Link href="https://world.openfoodfacts.org/" target="_blank">
+          <p className="text-white">Open Food Facts</p>
         </Link>
       </div>
     </div>
