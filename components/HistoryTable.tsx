@@ -1,6 +1,6 @@
 "use client";
 
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import {
   Table,
   TableBody,
@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "react-day-picker";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import useScreenSize from "@/app/utils/useScreenSize";
+import { roundToSecondPlace } from "@/app/utils/utils";
 
 interface Record extends FoodInputSchema {
   id: string;
@@ -60,7 +61,7 @@ export default function HistoryTable({
             <TableHead>
               {screenSize.width >= 768 ? "Calories" : "Cals"}
             </TableHead>
-            {/* <TableHead>Edit</TableHead> */}
+            {/* <TableHead>Remove</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -75,7 +76,7 @@ export default function HistoryTable({
                 {/* <TableCell>
                   <Dialog>
                     <DialogTrigger>
-                      <FiEdit />
+                      <FiTrash2 />
                     </DialogTrigger>
                     <DialogContent className="overflow-auto h-5/6"></DialogContent>
                   </Dialog>
@@ -86,16 +87,24 @@ export default function HistoryTable({
             <TableRow>
               <TableCell className="font-bold">Total</TableCell>
               <TableCell className="font-bold">
-                {records?.reduce((acc, curr) => acc + curr.protein, 0)}
+                {roundToSecondPlace(
+                  records!.reduce((acc, curr) => acc + curr.protein, 0)
+                )}
               </TableCell>
               <TableCell className="font-bold">
-                {records?.reduce((acc, curr) => acc + curr.carbs, 0)}
+                {roundToSecondPlace(
+                  records!.reduce((acc, curr) => acc + curr.carbs, 0)
+                )}
               </TableCell>
               <TableCell className="font-bold">
-                {records?.reduce((acc, curr) => acc + curr.fats, 0)}
+                {roundToSecondPlace(
+                  records!.reduce((acc, curr) => acc + curr.fats, 0)
+                )}
               </TableCell>
               <TableCell className="font-bold">
-                {records?.reduce((acc, curr) => acc + curr.calories, 0)}
+                {roundToSecondPlace(
+                  records!.reduce((acc, curr) => acc + curr.calories, 0)
+                )}
               </TableCell>
             </TableRow>
           )}
