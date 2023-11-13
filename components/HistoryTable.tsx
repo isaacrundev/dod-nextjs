@@ -11,9 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { FoodInputSchema } from "./FoodData";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "react-day-picker";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import useScreenSize from "@/app/utils/useScreenSize";
 
 interface Record extends FoodInputSchema {
   id: string;
@@ -28,6 +29,7 @@ export default function HistoryTable({
   selectedDate: string;
 }) {
   const [records, setRecords] = useState<Record[] | null>([]);
+  const screenSize = useScreenSize();
 
   const fetchHistory = async (date: string) => {
     try {
@@ -52,10 +54,12 @@ export default function HistoryTable({
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>P</TableHead>
-            <TableHead>C</TableHead>
-            <TableHead>F</TableHead>
-            <TableHead>Cals</TableHead>
+            <TableHead>{screenSize.width >= 768 ? "Protein" : "P"}</TableHead>
+            <TableHead>{screenSize.width >= 768 ? "Carbs" : "C"}</TableHead>
+            <TableHead>{screenSize.width >= 768 ? "Fats" : "F"}</TableHead>
+            <TableHead>
+              {screenSize.width >= 768 ? "Calories" : "Cals"}
+            </TableHead>
             {/* <TableHead>Edit</TableHead> */}
           </TableRow>
         </TableHeader>
