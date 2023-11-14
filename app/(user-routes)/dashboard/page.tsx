@@ -23,40 +23,38 @@ export default function DashboardPage() {
   const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
 
   return (
-    <div className="flex justify-center">
-      <div className="flex flex-col md:max-w-2xl basis-full">
-        <div className="py-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-[280px] justify-start text-left font-normal",
-                  !selectedDate && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="w-4 h-4 mr-2" />
-                {selectedDate && mmddyyyy}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                required
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                initialFocus
-              />
-              <div className="flex justify-center pb-3">
-                <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
-                  Apply
-                </PopoverClose>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-        <HistoryTable selectedDate={mmddyyyy!} />
+    <div className="flex flex-col mx-auto md:max-w-2xl basis-full">
+      <div className="py-4">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-[280px] justify-start text-left font-normal",
+                !selectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="w-4 h-4 mr-2" />
+              {selectedDate && mmddyyyy}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              required
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              initialFocus
+            />
+            <div className="flex justify-center pb-3">
+              <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
+                Apply
+              </PopoverClose>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
+      <HistoryTable selectedDate={mmddyyyy!} />
     </div>
   );
 }
