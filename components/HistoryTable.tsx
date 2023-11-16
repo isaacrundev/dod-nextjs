@@ -88,22 +88,22 @@ export default function HistoryTable({
               <TableCell className="font-bold">Total</TableCell>
               <TableCell className="font-bold">
                 {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.protein, 0)
+                  records!.reduce((acc, curr) => acc + curr.protein, 0),
                 )}
               </TableCell>
               <TableCell className="font-bold">
                 {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.carbs, 0)
+                  records!.reduce((acc, curr) => acc + curr.carbs, 0),
                 )}
               </TableCell>
               <TableCell className="font-bold">
                 {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.fats, 0)
+                  records!.reduce((acc, curr) => acc + curr.fats, 0),
                 )}
               </TableCell>
               <TableCell className="font-bold">
                 {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.calories, 0)
+                  records!.reduce((acc, curr) => acc + curr.calories, 0),
                 )}
               </TableCell>
             </TableRow>
