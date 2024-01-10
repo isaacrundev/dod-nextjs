@@ -53,7 +53,7 @@ const FoodData = () => {
     setIsLoading(true);
     try {
       const res = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?action=process&json=true&search_terms=${searchTerm}&page=${currentPage}`
+        `https://world.openfoodfacts.org/cgi/search.pl?action=process&json=true&search_terms=${searchTerm}&page=${currentPage}`,
       );
       if (res.ok) {
         setData(await res.json());
@@ -108,14 +108,14 @@ const FoodData = () => {
         <AddNewRecordForm item={selector} />
       ) : (
         <div>
-          <p className="mt-5 text-xl text-center">
+          <p className="mt-5 text-center text-xl">
             {session ? "Choose from food data" : "Food Search"}
           </p>
 
           <div className="mx-auto my-8">
             <form
               onSubmit={handleSearchClick}
-              className="flex max-w-sm gap-2 mx-auto"
+              className="mx-auto flex max-w-sm gap-2"
             >
               <Input type="text" onChange={handleInputChange} />
               <Button disabled={isLoading || searchinput === ""} type="submit">
@@ -134,7 +134,7 @@ const FoodData = () => {
             </div>
           )}
 
-          <div className="flex flex-col items-center justify-center gap-6">
+          <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-4">
             {data &&
               data.products.map((item) => (
                 <ImportedFoodCard
@@ -146,14 +146,14 @@ const FoodData = () => {
               ))}
             <div className="flex gap-2">
               <Button
-                className={`text-white bg-slate-500 ${!data && `hidden`}`}
+                className={`bg-slate-500 text-white ${!data && `hidden`}`}
                 onClick={handlePrevClick}
                 disabled={isLoading || page <= 1}
               >
                 ←
               </Button>
               <Button
-                className={`text-white bg-slate-500 ${!data && `hidden`}`}
+                className={`bg-slate-500 text-white ${!data && `hidden`}`}
                 onClick={handleNextClick}
                 disabled={isLoading || pageCount !== 24}
               >
