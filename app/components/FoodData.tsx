@@ -134,7 +134,7 @@ const FoodData = () => {
             </div>
           )}
 
-          <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-4">
+          <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-4 md:justify-items-center">
             {data &&
               data.products.map((item) => (
                 <ImportedFoodCard
@@ -144,22 +144,22 @@ const FoodData = () => {
                   setIsImported={setIsImported}
                 />
               ))}
-            <div className="flex gap-2">
-              <Button
-                className={`bg-slate-500 text-white ${!data && `hidden`}`}
-                onClick={handlePrevClick}
-                disabled={isLoading || page <= 1}
-              >
-                ←
-              </Button>
-              <Button
-                className={`bg-slate-500 text-white ${!data && `hidden`}`}
-                onClick={handleNextClick}
-                disabled={isLoading || pageCount !== 24}
-              >
-                →
-              </Button>
-            </div>
+          </div>
+          <div className="flex justify-center gap-2 pt-5">
+            <Button
+              className={`bg-slate-500 text-white ${!data && `hidden`}`}
+              onClick={handlePrevClick}
+              disabled={isLoading || page <= 1}
+            >
+              ←
+            </Button>
+            <Button
+              className={`bg-slate-500 text-white ${!data && `hidden`}`}
+              onClick={handleNextClick}
+              disabled={isLoading || pageCount !== 24}
+            >
+              →
+            </Button>
           </div>
         </div>
       )}

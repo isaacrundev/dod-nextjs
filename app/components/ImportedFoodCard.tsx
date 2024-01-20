@@ -41,9 +41,9 @@ export default function ImportedFoodCard({
   };
 
   return (
-    <Card className="flex flex-col items-center justify-between w-5/6 px-1 py-6 md:max-w-sm max-h-96">
+    <Card className="flex h-96 w-5/6 max-w-xs flex-col items-center justify-between overflow-scroll bg-gray-100 px-1 py-5 shadow-lg">
       <Image
-        className="w-auto h-auto "
+        className="h-auto w-auto "
         width={100}
         height={100}
         src={item.image_small_url ? item.image_small_url : noImage}
@@ -56,10 +56,8 @@ export default function ImportedFoodCard({
           {item.product_name_en
             ? item.product_name_en
             : item.product_name
-            ? item.product_name
-            : item.product_name_fr
-            ? item.product_name_fr
-            : "(No Food Name Found)"}
+              ? item.product_name
+              : "(No Food Name Found)"}
         </CardTitle>
         <CardDescription>Per 100g/ml</CardDescription>
       </CardHeader>
@@ -79,7 +77,7 @@ export default function ImportedFoodCard({
         <CardFooter className="p-3 pt-6">
           <Button
             type="button"
-            className="h-10 text-white rounded-md bg-primary w-28"
+            className="h-10 w-28 rounded-md bg-primary text-white"
             onClick={handleCardClick}
           >
             Import
