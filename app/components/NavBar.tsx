@@ -9,7 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@/app/components/ui/sheet";
 
 import {
   NavigationMenu,
@@ -21,7 +21,7 @@ import {
   NavigationMenuTrigger,
   NavigationMenuViewport,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+} from "@/app/components/ui/navigation-menu";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,7 +50,7 @@ const NavBar = () => {
           />
         </Link>
         <NavigationMenu className="hidden md:block">
-          <NavigationMenuList className="flex items-center h-20 gap-3">
+          <NavigationMenuList className="flex h-20 items-center gap-3">
             {session ? (
               <>
                 <NavigationMenuItem>
@@ -118,7 +118,7 @@ const NavBar = () => {
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger>
-              <FiMenu className="w-8 h-8" />
+              <FiMenu className="h-8 w-8" />
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
@@ -126,7 +126,7 @@ const NavBar = () => {
                 <SheetDescription>{session?.user?.email}</SheetDescription>
               </SheetHeader>
 
-              <NavigationMenu className="pt-10 mx-auto">
+              <NavigationMenu className="mx-auto pt-10">
                 <NavigationMenuList className="flex flex-col gap-5">
                   {session ? (
                     <>

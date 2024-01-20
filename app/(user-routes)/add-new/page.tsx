@@ -1,8 +1,8 @@
 "use client";
 
-import AddNewModal from "@/components/ImportModal";
-import InputModal from "@/components/InputModal";
-import { Button } from "@/components/ui/button";
+import AddNewModal from "@/app/components/ImportModal";
+import InputModal from "@/app/components/InputModal";
+import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 
 export default function AddNewPage() {

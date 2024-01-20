@@ -1,4 +1,4 @@
-import FoodData from "@/components/FoodData";
+import FoodData from "@/app/components/FoodData";
 
 const FoodDataPage = () => {
   return <FoodData />;

@@ -7,17 +7,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/app/components/ui/dialog";
 import FoodData from "./FoodData";
 
 export default function ImportModal() {
   return (
     <Dialog>
-      <DialogTrigger className="px-3 py-2 text-white rounded-lg bg-primary text-md">
+      <DialogTrigger className="text-md rounded-lg bg-primary px-3 py-2 text-white">
         Choose from Open Food Facts
       </DialogTrigger>
 
-      <DialogContent className="content-start w-full overflow-auto h-5/6">
+      <DialogContent className="h-5/6 w-full content-start overflow-auto">
         <FoodData />
       </DialogContent>
     </Dialog>

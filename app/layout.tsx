@@ -1,10 +1,10 @@
-import NavBar from "@/components/NavBar";
+import NavBar from "@/app/components/NavBar";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import AuthProviders from "@/components/AuthProviders";
+import AuthProviders from "@/app/components/AuthProviders";
 import ReduxProvider from "./rtk/Provider";
 import { ReactNode } from "react";
-import Footer from "@/components/Footer";
+import Footer from "@/app/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
