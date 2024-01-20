@@ -12,17 +12,16 @@ import {
 } from "@/components/ui/table";
 import { FoodInputSchema } from "./FoodData";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "react-day-picker";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import useScreenSize from "@/app/utils/useScreenSize";
 import { roundToSecondPlace } from "@/app/utils/utils";
+import { Button } from "./ui/button";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface Record extends FoodInputSchema {
   id: string;
   createAt: Date;
 }
-
-// const getSum = (total: number, number: number) => total + number;
 
 export default function HistoryTable({
   selectedDate,
@@ -49,6 +48,22 @@ export default function HistoryTable({
     fetchHistory(selectedDate);
   }, [selectedDate]);
 
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/records/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        alert("Record deleted successfully!!");
+        fetchHistory(selectedDate);
+      } else {
+        alert("Something went wrong. Please try again later.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Table>
@@ -61,7 +76,7 @@ export default function HistoryTable({
             <TableHead>
               {screenSize.width >= 768 ? "Calories" : "Cals"}
             </TableHead>
-            {/* <TableHead>Remove</TableHead> */}
+            <TableHead>Delete</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -73,14 +88,30 @@ export default function HistoryTable({
                 <TableCell>{record.carbs}</TableCell>
                 <TableCell>{record.fats}</TableCell>
                 <TableCell>{record.calories}</TableCell>
-                {/* <TableCell>
+                <TableCell>
                   <Dialog>
                     <DialogTrigger>
                       <FiTrash2 />
                     </DialogTrigger>
-                    <DialogContent className="overflow-auto h-5/6"></DialogContent>
+                    <DialogContent>
+                      <div className="flex flex-col items-center gap-6">
+                        <div className="font-bold">
+                          Do you want to delete this record?
+                        </div>
+                        <div>{record.foodName}</div>
+                        <div className="flex justify-center gap-5">
+                          <Button
+                            onClick={() => handleDelete(record.id)}
+                            className="bg-slate-500"
+                          >
+                            Yes
+                          </Button>
+                          <DialogClose>No</DialogClose>
+                        </div>
+                      </div>
+                    </DialogContent>
                   </Dialog>
-                </TableCell> */}
+                </TableCell>
               </TableRow>
             ))}
           {records?.length !== 0 && (
