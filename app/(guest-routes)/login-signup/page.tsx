@@ -1,13 +1,8 @@
 "use client";
 
-import LoginForm from "@/app/components/LoginForm";
-import SignupForm from "@/app/components/SignupForm";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/app/components/ui/tabs";
+import LoginForm from "@/components/LoginForm";
+import SignupForm from "@/components/SignupForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const LoginSignupPage = () => {
   return (

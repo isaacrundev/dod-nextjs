@@ -13,61 +13,51 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
-import { ChangeEvent, useEffect, useState } from "react";
-import { Product } from "@/app";
-import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "@/app/rtk/store";
-import { initialize } from "@/app/rtk/slices/importedFood";
-import { roundToSecondPlace } from "@/app/utils/utils";
+import { useEffect, useState } from "react";
 
-type Props = { item: Product | null };
+interface ExistingData extends FoodInputSchema {
+  intakeDate: string;
+}
 
-export default function AddNewRecordForm({ item = null }: Props) {
-  const dispatch = useDispatch<AppDispatch>();
-  const selector = useAppSelector((state) => state.importedFoodReducer);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
-  );
+export default function EditForm({ id }: { id: string }) {
+  const [formData, setFormData] = useState<ExistingData | undefined>();
+
+  useEffect(() => {
+    async () => {
+      try {
+        const res = await fetch(`/api/records/${id}`, { method: "GET" });
+        // setFormData(await res.json());
+        const parsed = await res.json();
+        parsed["intakeDate"] = parsed["intakeDate"].toISOstring();
+        setFormData(parsed);
+      } catch (error) {}
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
-    getValues,
-    setValue,
     formState: { errors },
   } = useForm<FoodInputSchema>({
     resolver: zodResolver(foodInputSchema),
-    defaultValues: item
-      ? {
-          foodName: item.product_name
-            ? item.product_name_en
-            : item.product_name
-            ? item.product_name
-            : item.product_name_fr
-            ? item.product_name_fr
-            : "(No Food Name Found)",
-          protein: +item.nutriments.proteins_100g,
-          fats: +item.nutriments.fat_100g,
-          carbs: +item.nutriments.carbohydrates_100g,
-          calories: +item.nutriments["energy-kcal_100g"],
-          foodSize: 100,
-        }
-      : {
-          foodName: "",
-          protein: 0,
-          fats: 0,
-          carbs: 0,
-          calories: 0,
-          foodSize: 0,
-        },
+    defaultValues: {
+      foodName: formData?.foodName,
+      protein: formData?.protein,
+      fats: formData?.fats,
+      carbs: formData?.carbs,
+      calories: formData?.calories,
+      foodSize: formData?.foodSize,
+    },
   });
 
   const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
 
   const onSave = async (data: FoodInputSchema) => {
     const combined = { ...data, intakeDate: mmddyyyy };
-    // console.log(combined);
+    console.log(combined);
     try {
       const res = await fetch("/api/records/add-new", {
         method: "POST",
@@ -88,48 +78,13 @@ export default function AddNewRecordForm({ item = null }: Props) {
     }
   };
 
-  const handleFoodSizeOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const foodSizeInputValue = +e.target.value;
-    setValue(
-      "calories",
-      roundToSecondPlace(
-        (+item!.nutriments["energy-kcal_100g"] / 100) * foodSizeInputValue
-      )
-    );
-    setValue(
-      "carbs",
-      roundToSecondPlace(
-        (+item!.nutriments.carbohydrates_100g / 100) * foodSizeInputValue
-      )
-    );
-    setValue(
-      "fats",
-      roundToSecondPlace(
-        (+item!.nutriments.fat_100g / 100) * foodSizeInputValue
-      )
-    );
-    setValue(
-      "protein",
-      roundToSecondPlace(
-        (+item!.nutriments.proteins_100g / 100) * foodSizeInputValue
-      )
-    );
-  };
-
-  useEffect(() => {
-    // console.log(selector);
-    dispatch(initialize);
-  });
-
   return (
     <>
       <form
         onSubmit={handleSubmit(onSave)}
         className="flex flex-col items-center justify-center gap-3"
       >
-        <p className="text-lg font-bold">
-          {item ? "Choose from Open Food Facts" : "Input food data by your own"}
-        </p>
+        <p className="text-lg font-bold"> Input food data by your own</p>
         <div className="flex flex-col space-y-1">
           <Label htmlFor="intake-date">Date</Label>
           <div>
@@ -140,10 +95,10 @@ export default function AddNewRecordForm({ item = null }: Props) {
                   variant={"outline"}
                   className={cn(
                     " justify-start text-left font-normal",
-                    !selectedDate && "text-muted-foreground"
+                    !selectedDate && "text-muted-foreground",
                   )}
                 >
-                  <CalendarIcon className="w-4 h-4 mr-2" />
+                  <CalendarIcon className="mr-2 h-4 w-4" />
                   {selectedDate && format(selectedDate, "P")}
                 </Button>
               </PopoverTrigger>
@@ -156,7 +111,7 @@ export default function AddNewRecordForm({ item = null }: Props) {
                   initialFocus
                 />
                 <div className="flex justify-center pb-3">
-                  <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
+                  <PopoverClose className="rounded-lg bg-primary px-5 py-2 text-white">
                     Apply
                   </PopoverClose>
                 </div>
@@ -166,12 +121,7 @@ export default function AddNewRecordForm({ item = null }: Props) {
         </div>
         <div className="space-y-1">
           <Label htmlFor="foodName">Food Name</Label>
-          <Input
-            disabled={!!item}
-            id="foodName"
-            type="text"
-            {...register("foodName")}
-          />
+          <Input id="foodName" type="text" {...register("foodName")} />
           {errors.foodName && (
             <p className="text-red-500 ">{errors.foodName.message}</p>
           )}
@@ -179,7 +129,6 @@ export default function AddNewRecordForm({ item = null }: Props) {
         <div className="space-y-1">
           <Label htmlFor="calories">Calories (kcals)</Label>
           <Input
-            disabled={!!item}
             id="calories"
             // type="number"
             {...register("calories", { valueAsNumber: true })}
@@ -191,7 +140,6 @@ export default function AddNewRecordForm({ item = null }: Props) {
         <div className="space-y-1">
           <Label htmlFor="carbs">Carbs (g)</Label>
           <Input
-            disabled={!!item}
             id="carbs"
             // type="number"
             {...register("carbs", { valueAsNumber: true })}
@@ -203,7 +151,6 @@ export default function AddNewRecordForm({ item = null }: Props) {
         <div className="space-y-1">
           <Label htmlFor="fats">Fats (g)</Label>
           <Input
-            disabled={!!item}
             id="fats"
             // type="number"
             {...register("fats", { valueAsNumber: true })}
@@ -215,7 +162,6 @@ export default function AddNewRecordForm({ item = null }: Props) {
         <div className="space-y-1">
           <Label htmlFor="protein">Protein (g)</Label>
           <Input
-            disabled={!!item}
             id="protein"
             // type="number"
 
@@ -226,13 +172,11 @@ export default function AddNewRecordForm({ item = null }: Props) {
           )}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="food-size">Food Size (g or ml)</Label>
+          <Label htmlFor="food-size">Size in total (g or ml)</Label>
           <Input
-            // disabled={item ? true : false}
             id="food-size"
             // type="number"
             {...register("foodSize", { valueAsNumber: true })}
-            onChange={item ? handleFoodSizeOnChange : (e) => e.target.value}
           />
           {errors.foodSize && (
             <p className="text-red-500 ">{errors.foodSize.message}</p>

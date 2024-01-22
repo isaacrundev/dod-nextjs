@@ -1,8 +1,8 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { Input } from "@/app/components/ui/input";
-import { Button } from "@/app/components/ui/button";
+import { ChangeEvent, FormEvent, Suspense, useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
 import { FetchedFoodData } from "@/app";
@@ -10,6 +10,7 @@ import { SyncLoader } from "react-spinners";
 import ImportedFoodCard from "./ImportedFoodCard";
 import AddNewRecordForm from "./AddNewRecordForm";
 import { useAppSelector } from "@/app/rtk/store";
+import Loading from "@/app/loading";
 
 export const foodInputSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -128,11 +129,12 @@ const FoodData = () => {
               Search result will appear here
             </p>
           )}
-          {isLoading && (
+          {/* {isLoading && (
             <div className="flex items-center justify-center pt-32">
               <SyncLoader color="#262E80" />
             </div>
-          )}
+          )} */}
+          {isLoading && <Loading />}
 
           <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-4 md:justify-items-center">
             {data &&

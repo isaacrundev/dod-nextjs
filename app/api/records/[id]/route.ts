@@ -49,6 +49,26 @@ export const foodDataRequestSchema = z.object({
   // ),
 });
 
+export async function GET(
+  _req: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email)
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+    const response = await prisma.record.findUnique({
+      where: { id: params.id },
+    });
+
+    return NextResponse.json(response);
+  } catch (error: any) {
+    console.log(error);
+    return NextResponse.json({ message: error.message }, { status: 400 });
+  }
+}
+
 export async function PUT(
   req: Request,
   { params }: { params: { id: string } },
@@ -63,16 +83,14 @@ export async function PUT(
     const { foodName, protein, fats, carbs, calories, foodSize, intakeDate } =
       foodDataRequestSchema.parse(reqBody);
 
-    // const { foodName, protein, fats, carbs, calories, foodSize, intakeTime } =
-    //   reqBody;
-
     const getUser = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
 
-    const newRecord = await prisma.record.update({
-      where: { id: params.id },
+    const response = await prisma.record.update({
+      where: { userId: getUser?.id, id: params.id },
       data: {
+        id: params.id,
         foodName,
         protein,
         fats,
@@ -84,7 +102,7 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json(newRecord);
+    return NextResponse.json(response);
   } catch (error: any) {
     console.log(error);
     return NextResponse.json({ message: error.message }, { status: 400 });
@@ -109,11 +127,11 @@ export async function DELETE(
       where: { email: session.user.email },
     });
 
-    const newRecord = await prisma.record.delete({
+    const response = await prisma.record.delete({
       where: { userId: getUser?.id, id: params.id },
     });
 
-    return NextResponse.json(newRecord);
+    return NextResponse.json(response);
   } catch (error: any) {
     console.log(error);
     return NextResponse.json({ message: error.message }, { status: 400 });

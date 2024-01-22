@@ -41,7 +41,7 @@ export default function ImportedFoodCard({
   };
 
   return (
-    <Card className="flex h-96 w-5/6 max-w-xs flex-col items-center justify-between overflow-scroll bg-gray-100 px-1 py-5 shadow-lg">
+    <Card className="flex h-96 w-5/6 max-w-xs flex-col items-center justify-between bg-gray-100 px-1 py-5 shadow-lg">
       <Image
         className="h-auto w-auto "
         width={100}
@@ -52,7 +52,7 @@ export default function ImportedFoodCard({
         blurDataURL={item.image_small_url}
       />
       <CardHeader className="py-2 text-center">
-        <CardTitle>
+        <CardTitle className="line-clamp-2">
           {item.product_name_en
             ? item.product_name_en
             : item.product_name

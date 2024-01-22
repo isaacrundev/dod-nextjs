@@ -1,10 +1,10 @@
-import NavBar from "@/app/components/NavBar";
+import NavBar from "@/components/NavBar";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import AuthProviders from "@/app/components/AuthProviders";
+import AuthProviders from "@/components/AuthProviders";
 import ReduxProvider from "./rtk/Provider";
 import { ReactNode } from "react";
-import Footer from "@/app/components/Footer";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,8 +15,8 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <ReduxProvider>
-        <AuthProviders>
+      <AuthProviders>
+        <ReduxProvider>
           <body className={inter.className}>
             <header>
               <nav>
@@ -28,8 +28,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Footer />
             </footer>
           </body>
-        </AuthProviders>
-      </ReduxProvider>
+        </ReduxProvider>
+      </AuthProviders>
     </html>
   );
 }

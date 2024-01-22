@@ -8,7 +8,7 @@ import unauthorized3 from "@/public/img/unauthorized/7ugzs0.jpg";
 import unauthorized4 from "@/public/img/unauthorized/7ugzv5.jpg";
 import unauthorized5 from "@/public/img/unauthorized/7uh08e.jpg";
 import speechless from "@/public/img/speechless.png";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 const imgArr = [
