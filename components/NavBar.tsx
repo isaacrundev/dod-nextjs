@@ -27,6 +27,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiMenu } from "react-icons/fi";
 import Image from "next/image";
+import { Pixelify_Sans } from "next/font/google";
+
+const pixelifySans = Pixelify_Sans({ subsets: ["latin"] });
 
 const NavBar = () => {
   const { data: session } = useSession();
@@ -41,16 +44,19 @@ const NavBar = () => {
     <>
       <div className="flex items-center justify-between px-5 py-4 shadow-sm md:px-20 md:py-0">
         <Link href="/" legacyBehavior passHref>
-          <Image
-            src={dodLogo}
-            alt="dod-logo"
-            width={60}
-            height={60}
-            className="hover:cursor-pointer"
-          />
+          <div className="flex items-center gap-3 hover:cursor-pointer">
+            <Image
+              priority
+              src={dodLogo}
+              alt="dod-logo"
+              width={60}
+              height={60}
+            />
+            <p className={`${pixelifySans.className} text-2xl`}>DietOrDie</p>
+          </div>
         </Link>
         <NavigationMenu className="hidden md:block">
-          <NavigationMenuList className="flex h-20 items-center gap-3">
+          <NavigationMenuList className="flex items-center h-20 gap-3">
             {session ? (
               <>
                 <NavigationMenuItem>
@@ -118,7 +124,7 @@ const NavBar = () => {
         <div className="md:hidden">
           <Sheet>
             <SheetTrigger>
-              <FiMenu className="h-8 w-8" />
+              <FiMenu className="w-8 h-8" />
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
@@ -126,7 +132,7 @@ const NavBar = () => {
                 <SheetDescription>{session?.user?.email}</SheetDescription>
               </SheetHeader>
 
-              <NavigationMenu className="mx-auto pt-10">
+              <NavigationMenu className="pt-10 mx-auto">
                 <NavigationMenuList className="flex flex-col gap-5">
                   {session ? (
                     <>

@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../../auth/[...nextauth]/route";
 
 export const foodDataRequestSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -27,14 +27,14 @@ export const foodDataRequestSchema = z.object({
     .number()
     .positive()
     .int({ message: "Interger value only" }),
-  intakeDate: z.coerce
-    .string()
-    .refine((str) => str.length === 10, {
-      message: `Invalid "inTakeDate" length`,
-    })
-    .refine((str) => str[2] === "-" && str[5] === "-", {
-      message: `Invalid "inTakeDate" format`,
-    }),
+  intakeDate: z.coerce.string().datetime(),
+
+  // .refine((str) => str.length === 10, {
+  //   message: `Invalid "inTakeDate" length`,
+  // })
+  // .refine((str) => str[2] === "-" && str[5] === "-", {
+  //   message: `Invalid "inTakeDate" format`,
+  // }),
   // .refine(
   //   (str) => {
   //     +str.slice(0, 2) <= 12;
@@ -53,13 +53,22 @@ export async function GET(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
+  !params.id &&
+    NextResponse.json({ message: "Missing query string(s)" }, { status: 400 });
+
   try {
+    const { id } = params;
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
+    const getUser = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
     const response = await prisma.record.findUnique({
-      where: { id: params.id },
+      where: { userId: getUser?.id, id },
     });
 
     return NextResponse.json(response);

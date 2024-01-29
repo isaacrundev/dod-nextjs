@@ -15,8 +15,8 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <AuthProviders>
-        <ReduxProvider>
+      <ReduxProvider>
+        <AuthProviders>
           <body className={inter.className}>
             <header>
               <nav>
@@ -28,8 +28,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Footer />
             </footer>
           </body>
-        </ReduxProvider>
-      </AuthProviders>
+        </AuthProviders>
+      </ReduxProvider>
     </html>
   );
 }

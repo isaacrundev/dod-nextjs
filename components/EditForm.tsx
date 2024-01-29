@@ -14,27 +14,39 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { useEffect, useState } from "react";
+import Loading from "@/app/loading";
 
 interface ExistingData extends FoodInputSchema {
-  intakeDate: string;
+  intakeDate: Date;
+  id: string;
 }
 
+const getData = async (id: string) => {
+  try {
+    const res = await fetch(`/api/records/id/${id}`);
+    if (res.ok) {
+      return res.json();
+    } else {
+      throw new Error(res.statusText);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export default function EditForm({ id }: { id: string }) {
-  const [formData, setFormData] = useState<ExistingData | undefined>();
+  const [dbData, setDbData] = useState<ExistingData>();
+  const [selectedDate, setSelectedDate] = useState<Date>();
 
   useEffect(() => {
-    async () => {
-      try {
-        const res = await fetch(`/api/records/${id}`, { method: "GET" });
-        // setFormData(await res.json());
-        const parsed = await res.json();
-        parsed["intakeDate"] = parsed["intakeDate"].toISOstring();
-        setFormData(parsed);
-      } catch (error) {}
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    getData(id).then((data) => setDbData(data));
+  }, [id]);
+
+  useEffect(() => {
+    if (dbData) {
+      setSelectedDate(new Date(dbData.intakeDate));
+    }
+  }, [dbData]);
 
   const router = useRouter();
   const {
@@ -43,24 +55,27 @@ export default function EditForm({ id }: { id: string }) {
     formState: { errors },
   } = useForm<FoodInputSchema>({
     resolver: zodResolver(foodInputSchema),
-    defaultValues: {
-      foodName: formData?.foodName,
-      protein: formData?.protein,
-      fats: formData?.fats,
-      carbs: formData?.carbs,
-      calories: formData?.calories,
-      foodSize: formData?.foodSize,
-    },
+    // defaultValues: {
+    //   foodName: formData?.foodName,
+    //   protein: formData?.protein,
+    //   fats: formData?.fats,
+    //   carbs: formData?.carbs,
+    //   calories: formData?.calories,
+    //   foodSize: formData?.foodSize,
+    // },
   });
 
-  const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
+  // const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
 
-  const onSave = async (data: FoodInputSchema) => {
-    const combined = { ...data, intakeDate: mmddyyyy };
-    console.log(combined);
+  const onUpdate = async (formData: FoodInputSchema) => {
+    const combined = {
+      ...dbData,
+      ...formData,
+      intakeDate: selectedDate?.toISOString(),
+    };
     try {
-      const res = await fetch("/api/records/add-new", {
-        method: "POST",
+      const res = await fetch(`/api/records/id/${combined.id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -68,124 +83,139 @@ export default function EditForm({ id }: { id: string }) {
       });
 
       if (res.ok) {
-        alert("Added Successfully!!");
+        alert("Edited Successfully!!");
         router.push("/dashboard");
+      } else {
+        alert("Something went wrong. Please try again later.");
+        throw new Error(res.statusText);
       }
-
-      return res.json();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   return (
     <>
-      <form
-        onSubmit={handleSubmit(onSave)}
-        className="flex flex-col items-center justify-center gap-3"
-      >
-        <p className="text-lg font-bold"> Input food data by your own</p>
-        <div className="flex flex-col space-y-1">
-          <Label htmlFor="intake-date">Date</Label>
-          <div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="intake-date"
-                  variant={"outline"}
-                  className={cn(
-                    " justify-start text-left font-normal",
-                    !selectedDate && "text-muted-foreground",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate && format(selectedDate, "P")}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  required
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  initialFocus
-                />
-                <div className="flex justify-center pb-3">
-                  <PopoverClose className="rounded-lg bg-primary px-5 py-2 text-white">
-                    Apply
-                  </PopoverClose>
-                </div>
-              </PopoverContent>
-            </Popover>
+      {dbData === undefined ? (
+        <Loading />
+      ) : (
+        <form
+          onSubmit={handleSubmit(onUpdate)}
+          className="flex flex-col items-center justify-center gap-3"
+        >
+          <p className="text-lg font-bold"> Edit Food Data</p>
+          <div className="flex flex-col space-y-1">
+            <Label htmlFor="intake-date">Date</Label>
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="intake-date"
+                    variant={"outline"}
+                    className={cn(
+                      " justify-start text-left font-normal",
+                      !selectedDate && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="w-4 h-4 mr-2" />
+                    {selectedDate && format(selectedDate, "MM/dd/yyyy")}
+                    {/* {selectedDate?.toString().toLocaleString().slice(0, 10)} */}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    required
+                    mode="single"
+                    selected={selectedDate!}
+                    onSelect={setSelectedDate}
+                    initialFocus
+                  />
+                  <div className="flex justify-center pb-3">
+                    <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
+                      Apply
+                    </PopoverClose>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="foodName">Food Name</Label>
-          <Input id="foodName" type="text" {...register("foodName")} />
-          {errors.foodName && (
-            <p className="text-red-500 ">{errors.foodName.message}</p>
-          )}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="calories">Calories (kcals)</Label>
-          <Input
-            id="calories"
-            // type="number"
-            {...register("calories", { valueAsNumber: true })}
-          />
-          {errors.calories && (
-            <p className="text-red-500 ">{errors.calories.message}</p>
-          )}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="carbs">Carbs (g)</Label>
-          <Input
-            id="carbs"
-            // type="number"
-            {...register("carbs", { valueAsNumber: true })}
-          />
-          {errors.carbs && (
-            <p className="text-red-500 ">{errors.carbs.message}</p>
-          )}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="fats">Fats (g)</Label>
-          <Input
-            id="fats"
-            // type="number"
-            {...register("fats", { valueAsNumber: true })}
-          />
-          {errors.fats && (
-            <p className="text-red-500 ">{errors.fats.message}</p>
-          )}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="protein">Protein (g)</Label>
-          <Input
-            id="protein"
-            // type="number"
-
-            {...register("protein", { valueAsNumber: true })}
-          />
-          {errors.protein && (
-            <p className="text-red-500 ">{errors.protein.message}</p>
-          )}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="food-size">Size in total (g or ml)</Label>
-          <Input
-            id="food-size"
-            // type="number"
-            {...register("foodSize", { valueAsNumber: true })}
-          />
-          {errors.foodSize && (
-            <p className="text-red-500 ">{errors.foodSize.message}</p>
-          )}
-        </div>
-        <Button className="w-28" type="submit">
-          Save
-        </Button>
-      </form>
+          <div className="space-y-1">
+            <Label htmlFor="foodName">Food Name</Label>
+            <Input
+              id="foodName"
+              type="text"
+              {...register("foodName")}
+              defaultValue={dbData?.foodName}
+            />
+            {errors.foodName && (
+              <p className="text-red-500 ">{errors.foodName.message}</p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="calories">Calories (kcals)</Label>
+            <Input
+              id="calories"
+              type="number"
+              {...register("calories", { valueAsNumber: true })}
+              defaultValue={dbData?.calories}
+            />
+            {errors.calories && (
+              <p className="text-red-500 ">{errors.calories.message}</p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="carbs">Carbs (g)</Label>
+            <Input
+              id="carbs"
+              type="number"
+              {...register("carbs", { valueAsNumber: true })}
+              defaultValue={dbData?.carbs}
+            />
+            {errors.carbs && (
+              <p className="text-red-500 ">{errors.carbs.message}</p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="fats">Fats (g)</Label>
+            <Input
+              id="fats"
+              type="number"
+              {...register("fats", { valueAsNumber: true })}
+              defaultValue={dbData?.fats}
+            />
+            {errors.fats && (
+              <p className="text-red-500 ">{errors.fats.message}</p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="protein">Protein (g)</Label>
+            <Input
+              id="protein"
+              type="number"
+              {...register("protein", { valueAsNumber: true })}
+              defaultValue={dbData?.protein}
+            />
+            {errors.protein && (
+              <p className="text-red-500 ">{errors.protein.message}</p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="food-size">Size in total (g or ml)</Label>
+            <Input
+              id="food-size"
+              type="number"
+              {...register("foodSize", { valueAsNumber: true })}
+              defaultValue={dbData?.foodSize}
+            />
+            {errors.foodSize && (
+              <p className="text-red-500 ">{errors.foodSize.message}</p>
+            )}
+          </div>
+          <Button className="w-28" type="submit">
+            Update
+          </Button>
+        </form>
+      )}
     </>
   );
 }

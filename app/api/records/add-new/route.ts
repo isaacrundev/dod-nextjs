@@ -27,14 +27,7 @@ export const foodDataRequestSchema = z.object({
     .number()
     .positive()
     .int({ message: "Interger value only" }),
-  intakeDate: z.coerce
-    .string()
-    .refine((str) => str.length === 10, {
-      message: `Invalid "inTakeDate" length`,
-    })
-    .refine((str) => str[2] === "-" && str[5] === "-", {
-      message: `Invalid "inTakeDate" format`,
-    }),
+  intakeDate: z.coerce.string().datetime(),
   // .refine(
   //   (str) => {
   //     +str.slice(0, 2) <= 12;

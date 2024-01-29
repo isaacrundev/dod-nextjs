@@ -24,7 +24,7 @@ type Props = { item: Product | null };
 
 export default function AddNewRecordForm({ item }: Props) {
   const dispatch = useDispatch<AppDispatch>();
-  const selector = useAppSelector((state) => state.importedFoodReducer);
+  // const selector = useAppSelector((state) => state.importedFoodReducer);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date(),
   );
@@ -61,10 +61,10 @@ export default function AddNewRecordForm({ item }: Props) {
         },
   });
 
-  const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
+  // const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
 
   const onSave = async (data: FoodInputSchema) => {
-    const combined = { ...data, intakeDate: mmddyyyy };
+    const combined = { ...data, intakeDate: selectedDate?.toISOString() };
     // console.log(combined);
     try {
       const res = await fetch("/api/records/add-new", {
@@ -119,6 +119,10 @@ export default function AddNewRecordForm({ item }: Props) {
     dispatch(initialize);
   });
 
+  // useEffect(() => {
+  //   console.log(selectedDate);
+  // }, [selectedDate]);
+
   return (
     <>
       <form
@@ -141,7 +145,7 @@ export default function AddNewRecordForm({ item }: Props) {
                     !selectedDate && "text-muted-foreground",
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className="w-4 h-4 mr-2" />
                   {selectedDate && format(selectedDate, "P")}
                 </Button>
               </PopoverTrigger>
@@ -154,7 +158,7 @@ export default function AddNewRecordForm({ item }: Props) {
                   initialFocus
                 />
                 <div className="flex justify-center pb-3">
-                  <PopoverClose className="rounded-lg bg-primary px-5 py-2 text-white">
+                  <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
                     Apply
                   </PopoverClose>
                 </div>
