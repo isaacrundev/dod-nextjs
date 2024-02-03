@@ -41,6 +41,6 @@ model Record {
   createAt   DateTime @default(now())
   updateAt   DateTime?
   userId     String 
-  intakeDate DateTime @db.Date
+  intakeDate DateTime @db.Timestamp
   user       User     @relation(fields: [userId], references: [id])
 }

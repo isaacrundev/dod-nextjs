@@ -21,6 +21,7 @@ import EditForm from "./EditForm";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import Link from "next/link";
+import Loading from "@/app/loading";
 
 interface Record extends FoodInputSchema {
   id: string;
@@ -53,16 +54,22 @@ const fetchHistory = async (date: string) => {
     console.error(error);
   }
 };
-export default function HistoryTable({ selectedDate }: { selectedDate: Date }) {
+export default function HistoryTable({
+  selectedDate,
+}: {
+  selectedDate: Date | undefined;
+}) {
   const [records, setRecords] = useState<Record[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const screenSize = useScreenSize();
 
   useEffect(() => {
     setIsLoading(true);
-    fetchHistory(selectedDate.toISOString())
-      .then((data) => setRecords(data))
-      .finally(() => setIsLoading(false));
+    if (selectedDate) {
+      fetchHistory(`${selectedDate.toISOString().slice(0, 13)}:00:00Z`)
+        .then((data) => setRecords(data))
+        .finally(() => setIsLoading(false));
+    }
   }, [selectedDate]);
 
   const handleDelete = async (id: string) => {
@@ -90,98 +97,100 @@ export default function HistoryTable({ selectedDate }: { selectedDate: Date }) {
 
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {screenSize.width >= 768
-              ? tableHead.map((i) => (
-                  <TableHead key={i.desktop} suppressHydrationWarning>
-                    {i.desktop}
-                  </TableHead>
-                ))
-              : tableHead.map((i) => (
-                  <TableHead key={i.mobile} suppressHydrationWarning>
-                    {i.mobile}
-                  </TableHead>
-                ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {/* {isLoading && <p>Loading...</p>} */}
-          {records?.length ? (
-            records.map((record) => (
-              <TableRow key={record.id}>
-                <TableCell>{record.foodName}</TableCell>
-                <TableCell>{record.protein}</TableCell>
-                <TableCell>{record.carbs}</TableCell>
-                <TableCell>{record.fats}</TableCell>
-                <TableCell>{record.calories}</TableCell>
-                <TableCell>
-                  <Link href={`/dashboard/edit/${record.id}`}>
-                    <FiEdit />
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Dialog>
-                    <DialogTrigger>
-                      <FiTrash2 />
-                    </DialogTrigger>
-                    <DialogContent>
-                      <div className="flex flex-col items-center gap-6">
-                        <p className="font-bold">
-                          Do you want to delete this record?
-                        </p>
-                        <div>{record.foodName}</div>
-                        <div className="flex justify-center gap-5">
-                          <Button
-                            asChild
-                            className="bg-slate-500"
-                            onClick={() => handleDelete(record.id)}
-                          >
-                            <DialogClose>Yes</DialogClose>
-                          </Button>
-                          <DialogClose>No</DialogClose>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {screenSize.width >= 768
+                ? tableHead.map((i) => (
+                    <TableHead key={i.desktop} suppressHydrationWarning>
+                      {i.desktop}
+                    </TableHead>
+                  ))
+                : tableHead.map((i) => (
+                    <TableHead key={i.mobile} suppressHydrationWarning>
+                      {i.mobile}
+                    </TableHead>
+                  ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {/* {isLoading && <p>Loading...</p>} */}
+            {records?.length ? (
+              records.map((record) => (
+                <TableRow key={record.id}>
+                  <TableCell>{record.foodName}</TableCell>
+                  <TableCell>{record.protein}</TableCell>
+                  <TableCell>{record.carbs}</TableCell>
+                  <TableCell>{record.fats}</TableCell>
+                  <TableCell>{record.calories}</TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/edit/${record.id}`}>
+                      <FiEdit />
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Dialog>
+                      <DialogTrigger>
+                        <FiTrash2 />
+                      </DialogTrigger>
+                      <DialogContent>
+                        <div className="flex flex-col items-center gap-6">
+                          <p className="font-bold">
+                            Do you want to delete this record?
+                          </p>
+                          <div>{record.foodName}</div>
+                          <div className="flex justify-center gap-5">
+                            <Button
+                              asChild
+                              className="bg-slate-500"
+                              onClick={() => handleDelete(record.id)}
+                            >
+                              <DialogClose>Yes</DialogClose>
+                            </Button>
+                            <DialogClose>No</DialogClose>
+                          </div>
                         </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                      </DialogContent>
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell>No Records</TableCell>
+              </TableRow>
+            )}
+            {records?.length ? (
+              <TableRow>
+                <TableCell className="font-bold">Total</TableCell>
+                <TableCell className="font-bold">
+                  {roundToSecondPlace(
+                    records!.reduce((acc, curr) => acc + curr.protein, 0),
+                  )}
+                </TableCell>
+                <TableCell className="font-bold">
+                  {roundToSecondPlace(
+                    records!.reduce((acc, curr) => acc + curr.carbs, 0),
+                  )}
+                </TableCell>
+                <TableCell className="font-bold">
+                  {roundToSecondPlace(
+                    records!.reduce((acc, curr) => acc + curr.fats, 0),
+                  )}
+                </TableCell>
+                <TableCell className="font-bold">
+                  {roundToSecondPlace(
+                    records!.reduce((acc, curr) => acc + curr.calories, 0),
+                  )}
                 </TableCell>
               </TableRow>
-            ))
-          ) : isLoading ? (
-            <p>Loading...</p>
-          ) : (
-            <TableRow>
-              <TableCell>No Records</TableCell>
-            </TableRow>
-          )}
-          {records?.length ? (
-            <TableRow>
-              <TableCell className="font-bold">Total</TableCell>
-              <TableCell className="font-bold">
-                {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.protein, 0),
-                )}
-              </TableCell>
-              <TableCell className="font-bold">
-                {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.carbs, 0),
-                )}
-              </TableCell>
-              <TableCell className="font-bold">
-                {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.fats, 0),
-                )}
-              </TableCell>
-              <TableCell className="font-bold">
-                {roundToSecondPlace(
-                  records!.reduce((acc, curr) => acc + curr.calories, 0),
-                )}
-              </TableCell>
-            </TableRow>
-          ) : null}
-        </TableBody>
-      </Table>
+            ) : null}
+          </TableBody>
+        </Table>
+      )}
     </>
   );
 }
