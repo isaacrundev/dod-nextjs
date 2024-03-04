@@ -11,13 +11,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { FoodInputSchema } from "./FoodData";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import useScreenSize from "@/app/utils/useScreenSize";
 import { roundToSecondPlace } from "@/app/utils/utils";
 import { Button } from "./ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
 import EditForm from "./EditForm";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import Link from "next/link";
 import Loading from "@/app/loading";
 
 interface Record extends FoodInputSchema {
@@ -25,66 +28,97 @@ interface Record extends FoodInputSchema {
   createAt: Date;
 }
 
+const tableHead = [
+  { mobile: "Name", desktop: "Name" },
+  { mobile: "P", desktop: "Protein" },
+  { mobile: "C", desktop: "Carbs" },
+  { mobile: "F", desktop: "Fats" },
+  { mobile: "Cals", desktop: "Calories" },
+  { mobile: "Edit", desktop: "Edit" },
+  { mobile: "Delete", desktop: "Delete" },
+];
+
+const fetchHistory = async (date: string) => {
+  try {
+    const res = await fetch(`/api/records/date/${date}`, {
+      method: "GET",
+    });
+
+    if (res.ok) {
+      return res.json();
+    } else {
+      // setRecords([]);
+      throw new Error(res.statusText);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 export default function HistoryTable({
   selectedDate,
 }: {
-  selectedDate: string;
+  selectedDate: Date | undefined;
 }) {
-  const [records, setRecords] = useState<Record[] | null>([]);
+  const [records, setRecords] = useState<Record[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const screenSize = useScreenSize();
 
-  const fetchHistory = async (date: string) => {
-    try {
-      const res = await fetch(`/api/records/date/${date}`, {
-        method: "GET",
-      });
-
-      !res.ok && setRecords(null);
-      setRecords(await res.json());
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    fetchHistory(selectedDate);
+    setIsLoading(true);
+    if (selectedDate) {
+      fetchHistory(`${selectedDate.toISOString().slice(0, 13)}:00:00Z`)
+        .then((data) => setRecords(data))
+        .finally(() => setIsLoading(false));
+    }
   }, [selectedDate]);
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/records/${id}`, {
+      const res = await fetch(`/api/records/id/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
         alert("Record deleted successfully!!");
-        fetchHistory(selectedDate);
+        // format(selectedDate, "YYYY-MM-DD");
+
+        // fetchHistory(selectedDate.slice(0, 10));
       } else {
         alert("Something went wrong. Please try again later.");
+        throw new Error(res.statusText);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  // useEffect(() => {
+  //   console.log(records);
+  // }, [records]);
+
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>{screenSize.width >= 768 ? "Protein" : "P"}</TableHead>
-            <TableHead>{screenSize.width >= 768 ? "Carbs" : "C"}</TableHead>
-            <TableHead>{screenSize.width >= 768 ? "Fats" : "F"}</TableHead>
-            <TableHead>
-              {screenSize.width >= 768 ? "Calories" : "Cals"}
-            </TableHead>
-            {/* <TableHead>Modify</TableHead> */}
-            <TableHead>Delete</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <Suspense fallback={<Loading />}>
-            {records &&
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {screenSize.width >= 768
+                ? tableHead.map((i) => (
+                    <TableHead key={i.desktop} suppressHydrationWarning>
+                      {i.desktop}
+                    </TableHead>
+                  ))
+                : tableHead.map((i) => (
+                    <TableHead key={i.mobile} suppressHydrationWarning>
+                      {i.mobile}
+                    </TableHead>
+                  ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {/* {isLoading && <p>Loading...</p>} */}
+            {records?.length ? (
               records.map((record) => (
                 <TableRow key={record.id}>
                   <TableCell>{record.foodName}</TableCell>
@@ -92,16 +126,11 @@ export default function HistoryTable({
                   <TableCell>{record.carbs}</TableCell>
                   <TableCell>{record.fats}</TableCell>
                   <TableCell>{record.calories}</TableCell>
-                  {/* <TableCell>
-                    <Dialog>
-                      <DialogTrigger>
-                        <FiEdit />
-                      </DialogTrigger>
-                      <DialogContent>
-                        <EditForm id={record.id} />
-                      </DialogContent>
-                    </Dialog>
-                  </TableCell> */}
+                  <TableCell>
+                    <Link href={`/dashboard/edit/${record.id}`}>
+                      <FiEdit />
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <Dialog>
                       <DialogTrigger>
@@ -109,16 +138,17 @@ export default function HistoryTable({
                       </DialogTrigger>
                       <DialogContent>
                         <div className="flex flex-col items-center gap-6">
-                          <div className="font-bold">
+                          <p className="font-bold">
                             Do you want to delete this record?
-                          </div>
+                          </p>
                           <div>{record.foodName}</div>
                           <div className="flex justify-center gap-5">
                             <Button
-                              onClick={() => handleDelete(record.id)}
+                              asChild
                               className="bg-slate-500"
+                              onClick={() => handleDelete(record.id)}
                             >
-                              Yes
+                              <DialogClose>Yes</DialogClose>
                             </Button>
                             <DialogClose>No</DialogClose>
                           </div>
@@ -127,8 +157,13 @@ export default function HistoryTable({
                     </Dialog>
                   </TableCell>
                 </TableRow>
-              ))}
-            {records?.length !== 0 && (
+              ))
+            ) : (
+              <TableRow>
+                <TableCell>No Records</TableCell>
+              </TableRow>
+            )}
+            {records?.length ? (
               <TableRow>
                 <TableCell className="font-bold">Total</TableCell>
                 <TableCell className="font-bold">
@@ -152,15 +187,10 @@ export default function HistoryTable({
                   )}
                 </TableCell>
               </TableRow>
-            )}
-            {records?.length === 0 && (
-              <TableRow key="no-records">
-                <TableCell>No Records</TableCell>
-              </TableRow>
-            )}
-          </Suspense>
-        </TableBody>
-      </Table>
+            ) : null}
+          </TableBody>
+        </Table>
+      )}
     </>
   );
 }

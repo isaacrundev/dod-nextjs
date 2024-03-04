@@ -4,7 +4,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url  	= env("SUPABASE_URL")
+  // url  	= env("SUPABASE_URL")
+  // url  	= env("LOCALHOST_URL")
+  url  	    = env("NEON_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -36,8 +39,8 @@ model Record {
   calories   Float
   foodSize   Float
   createAt   DateTime @default(now())
-  // updateAt   DateTime?
+  updateAt   DateTime?
   userId     String 
-  intakeDate String @db.VarChar(10)
+  intakeDate DateTime @db.Timestamp
   user       User     @relation(fields: [userId], references: [id])
 }

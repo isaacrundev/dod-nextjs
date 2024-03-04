@@ -16,11 +16,16 @@ import { useEffect, useState } from "react";
 import { PopoverClose } from "@radix-ui/react-popover";
 
 export default function DashboardPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date(),
-  );
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  useEffect(() => {
+    setSelectedDate(new Date());
+  }, []);
 
-  const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
+  // useEffect(() => {
+  //   if (selectedDate) {
+  //     console.log(selectedDate);
+  //   }
+  // }, [selectedDate]);
 
   return (
     <div className="mx-auto flex basis-full flex-col md:max-w-2xl">
@@ -35,7 +40,7 @@ export default function DashboardPage() {
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate && mmddyyyy}
+              {selectedDate && format(selectedDate, "MM/dd/yyyy")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -54,7 +59,7 @@ export default function DashboardPage() {
           </PopoverContent>
         </Popover>
       </div>
-      <HistoryTable selectedDate={mmddyyyy!} />
+      <HistoryTable selectedDate={selectedDate} />
     </div>
   );
 }
