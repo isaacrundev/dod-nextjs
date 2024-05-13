@@ -2,11 +2,12 @@ import Image from "next/image";
 import trainingManPic from "@/public/img/Fitz-Standing.png";
 import handsPhonePic from "@/public/img/Hands-Phone.png";
 import lifeManagementPic from "@/public/img/Life-Management.png";
+import HomePage from "@/components/HomePage";
 
 const Home = () => {
   return (
     <>
-      <div className="flex flex-col items-center justify-center max-w-5xl gap-16 mx-auto">
+      {/* <div className="flex flex-col items-center justify-center max-w-5xl gap-16 mx-auto">
         <div className="flex flex-col items-center justify-center gap-20 md:flex-row-reverse">
           <div className="relative w-64">
             <Image alt="Hands-Phone" src={handsPhonePic} placeholder="blur" />
@@ -56,21 +57,10 @@ const Home = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
+      <HomePage />
     </>
   );
 };
 
 export default Home;
-
-// But that&apos;s not all! Our website goes beyond
-//         tracking your meals. We understand that every individual has unique
-//         energy requirements, which is why we offer a TDEE (Total Daily Energy
-//         Expenditure) calculator. By inputting relevant information such as your
-//         activity level, age, height, and weight, you can determine the ideal
-//         calorie intake tailored to your specific needs. This knowledge empowers
-//         you to maintain a healthy balance and optimize your overall well-being.
-//         Join our community of health-conscious individuals who are committed to
-//         embracing a nutritious lifestyle. Explore our website, unlock the
-//         benefits of tracking your diet, and embark on a journey towards a
-//         healthier, happier you.
