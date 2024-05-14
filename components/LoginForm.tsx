@@ -52,7 +52,7 @@ const LoginForm = () => {
 
   return (
     <>
-      <form
+      {/* <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col justify-center gap-5"
       >
@@ -75,7 +75,35 @@ const LoginForm = () => {
             <p className="text-red-500 ">{errors.password.message}</p>
           )}
         </div>
-        <Button className="mt-5 w-full" type="submit" disabled={isLoading}>
+        <Button className="w-full mt-5" type="submit" disabled={isLoading}>
+          Login
+        </Button>
+      </form> */}
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid gap-4">
+          <div className="grid gap-1">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              placeholder="Test email: aloha@qmail.com"
+              type="email"
+              id="email"
+              {...register("email")}
+            />
+          </div>
+          <div className="grid gap-1">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              placeholder="Test password: 111111"
+              type="password"
+              {...register("password")}
+            />
+            {errors.password && (
+              <p className="text-red-500 ">{errors.password.message}</p>
+            )}
+          </div>
+        </div>
+        <Button className="w-full" type="submit" disabled={isLoading}>
           Login
         </Button>
       </form>
@@ -84,20 +112,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-
-{
-  /* <FormField
-control={control}
-name="email"
-render={({ field }) => (
-  <FormItem>
-    <FormLabel>email</FormLabel>
-    <FormControl>
-      <Input placeholder="shadcn" {...field} />
-    </FormControl>
-    <FormDescription>Email </FormDescription>
-    <FormMessage />
-  </FormItem>
-)}
-/> */
-}

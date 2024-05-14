@@ -78,6 +78,50 @@ const SignupForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col justify-center gap-5"
       >
+        <div className="grid gap-4">
+          {/* <div>
+            <Label htmlFor="name">Name</Label>
+            <Input id="name" placeholder="John Doe" type="text" />
+          </div> */}
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              placeholder="ex: aloha@qmail.com"
+              type="email"
+              id="email"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className="text-red-500 ">{errors.email.message}</p>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input type="password" id="password" {...register("password")} />
+            {errors.password && (
+              <p className="text-red-500 ">{errors.password.message}</p>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="confirm-password">Confirm Password</Label>
+            <Input
+              type="password"
+              id="confirm-password"
+              {...register("confirmPassword")}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 ">{errors.confirmPassword.message}</p>
+            )}
+          </div>
+        </div>
+        <Button className="w-full" type="submit" disabled={isLoading}>
+          Sign Up
+        </Button>
+      </form>
+      {/* <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col justify-center gap-5"
+      >
         <div className="space-y-1 ">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -108,29 +152,62 @@ const SignupForm = () => {
             <p className="text-red-500 ">{errors.confirmPassword.message}</p>
           )}
         </div>
-        <Button className="mt-5 w-full" type="submit" disabled={isLoading}>
+        <Button className="w-full mt-5" type="submit" disabled={isLoading}>
           Sign Up
         </Button>
-      </form>
+      </form> */}
     </>
   );
 };
 
 export default SignupForm;
 
-{
-  /* <FormField
-control={control}
-name="email"
-render={({ field }) => (
-  <FormItem>
-    <FormLabel>email</FormLabel>
-    <FormControl>
-      <Input placeholder="shadcn" {...field} />
-    </FormControl>
-    <FormDescription>Email </FormDescription>
-    <FormMessage />
-  </FormItem>
-)}
-/> */
-}
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/34idCVV03ja
+ * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
+ */
+
+// export default function Component() {
+//   return (
+//     <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-100 dark:bg-gray-950">
+//       <div className="w-full max-w-md space-y-8">
+//         <div>
+//           <Toggle
+//             aria-label="Toggle sign up/login"
+//             className="flex justify-center mb-8"
+//             variant="outline"
+//           >
+//             <span className="px-4 py-2 text-sm font-medium">Sign Up</span>
+//             <span className="px-4 py-2 text-sm font-medium">Login</span>
+//           </Toggle>
+//         </div>
+//         <div className="p-8 bg-white rounded-lg shadow dark:bg-gray-900">
+//           <form className="space-y-6">
+//             <div className="grid gap-4">
+//               <div>
+//                 <Label htmlFor="name">Name</Label>
+//                 <Input id="name" placeholder="John Doe" type="text" />
+//               </div>
+//               <div>
+//                 <Label htmlFor="email">Email</Label>
+//                 <Input
+//                   id="email"
+//                   placeholder="example@email.com"
+//                   type="email"
+//                 />
+//               </div>
+//               <div>
+//                 <Label htmlFor="password">Password</Label>
+//                 <Input id="password" placeholder="••••••••" type="password" />
+//               </div>
+//             </div>
+//             <Button className="w-full" type="submit">
+//               Sign Up
+//             </Button>
+//           </form>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }

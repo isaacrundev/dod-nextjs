@@ -1,6 +1,14 @@
 "use client";
 
-import { ChangeEvent, FormEvent, Suspense, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  JSX,
+  SVGProps,
+  Suspense,
+  useEffect,
+  useState,
+} from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
@@ -11,6 +19,13 @@ import ImportedFoodCard from "./ImportedFoodCard";
 import AddNewRecordForm from "./AddNewRecordForm";
 import { useAppSelector } from "@/app/rtk/store";
 import Loading from "@/app/loading";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "./ui/pagination";
 
 export const foodInputSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -129,14 +144,10 @@ const FoodData = () => {
               Search result will appear here
             </p>
           )}
-          {/* {isLoading && (
-            <div className="flex items-center justify-center pt-32">
-              <SyncLoader color="#262E80" />
-            </div>
-          )} */}
           {isLoading && <Loading />}
 
-          <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-4 md:justify-items-center">
+          {/* <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-4 md:justify-items-center"> */}
+          <div className="grid grid-cols-1 gap-6 px-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {data &&
               data.products.map((item) => (
                 <ImportedFoodCard
@@ -147,8 +158,8 @@ const FoodData = () => {
                 />
               ))}
           </div>
-          <div className="flex justify-center gap-2 pt-5">
-            <Button
+          <div className="flex justify-center gap-2 py-5">
+            {/* <Button
               className={`bg-slate-500 text-white ${!data && `hidden`}`}
               onClick={handlePrevClick}
               disabled={isLoading || page <= 1}
@@ -161,7 +172,25 @@ const FoodData = () => {
               disabled={isLoading || pageCount !== 24}
             >
               →
-            </Button>
+            </Button> */}
+            {data && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious onClick={handlePrevClick} />
+                  </PaginationItem>
+                  {/* <PaginationItem>
+                  <PaginationLink href="#">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem> */}
+                  <PaginationItem>
+                    <PaginationNext onClick={handleNextClick} />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
         </div>
       )}
