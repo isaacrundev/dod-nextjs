@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/huCtvLs8KLb
+ * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
+ */
+
 import { Datum, ResponsiveLine } from "@nivo/line";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -26,11 +32,6 @@ type DBData = {
 
 type CaloriesByDate = {
   [key: string]: number;
-};
-
-type ChartData = {
-  x: string;
-  y: number;
 };
 
 function processCaloriesData(data: DBData[]) {
