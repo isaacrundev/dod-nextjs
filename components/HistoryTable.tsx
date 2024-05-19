@@ -103,7 +103,7 @@ export default function HistoryTable({
         <Table>
           <TableHeader>
             <TableRow>
-              {screenSize.width >= 768
+              {/* {screenSize.width >= 768
                 ? tableHead.map((i) => (
                     <TableHead key={i.desktop} suppressHydrationWarning>
                       {i.desktop}
@@ -113,7 +113,10 @@ export default function HistoryTable({
                     <TableHead key={i.mobile} suppressHydrationWarning>
                       {i.mobile}
                     </TableHead>
-                  ))}
+                  ))} */}
+              {tableHead.map((i) => (
+                <TableHead key={i.desktop}>{i.desktop}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>

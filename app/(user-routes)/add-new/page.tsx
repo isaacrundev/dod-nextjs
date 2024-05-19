@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function AddNewPage() {
   return (
-    <div className="container h-screen">
+    <div className="min-h-screen">
       <div>
         <p className="text-center text-lg font-bold ">Add New</p>
       </div>

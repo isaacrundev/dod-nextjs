@@ -11,5 +11,5 @@ export default async function Layout({ children }: Props) {
   const session = await getServerSession(authOptions);
   !session?.user && redirect("/unauthenticated");
 
-  return <>{children}</>;
+  return <div className="pt-8">{children}</div>;
 }

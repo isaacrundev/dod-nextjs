@@ -124,14 +124,14 @@ const FoodData = () => {
         <AddNewRecordForm item={selector} />
       ) : (
         <div>
-          <p className="mt-5 text-center text-xl">
+          <p className="mt-5 text-xl text-center">
             {session ? "Choose from food data" : "Food Search"}
           </p>
 
           <div className="mx-auto my-8">
             <form
               onSubmit={handleSearchClick}
-              className="mx-auto flex max-w-sm gap-2"
+              className="flex max-w-sm gap-2 mx-auto"
             >
               <Input type="text" onChange={handleInputChange} />
               <Button disabled={isLoading || searchinput === ""} type="submit">
@@ -177,7 +177,10 @@ const FoodData = () => {
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious onClick={handlePrevClick} />
+                    <PaginationPrevious
+                      className="cursor-pointer"
+                      onClick={handlePrevClick}
+                    />
                   </PaginationItem>
                   {/* <PaginationItem>
                   <PaginationLink href="#">1</PaginationLink>
@@ -186,7 +189,10 @@ const FoodData = () => {
                   <PaginationEllipsis />
                 </PaginationItem> */}
                   <PaginationItem>
-                    <PaginationNext onClick={handleNextClick} />
+                    <PaginationNext
+                      className="cursor-pointer"
+                      onClick={handleNextClick}
+                    />
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>

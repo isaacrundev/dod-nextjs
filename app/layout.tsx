@@ -5,6 +5,7 @@ import AuthProviders from "@/components/AuthProviders";
 import ReduxProvider from "./rtk/Provider";
 import { ReactNode } from "react";
 import Footer from "@/components/Footer";
+import QueryProdider from "@/components/QueryProdider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,22 +16,24 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <ReduxProvider>
-        <AuthProviders>
-          <body className={inter.className}>
-            <header>
-              <nav>
-                <NavBar />
-              </nav>
-            </header>
-            <main>{children}</main>
-            {/* <main className="min-h-screen px-10 py-5 md:px-20">{children}</main> */}
-            {/* <footer>
+      <QueryProdider>
+        <ReduxProvider>
+          <AuthProviders>
+            <body className={inter.className}>
+              <header>
+                <nav>
+                  <NavBar />
+                </nav>
+              </header>
+              <main>{children}</main>
+              {/* <main className="min-h-screen px-10 py-5 md:px-20">{children}</main> */}
+              {/* <footer>
               <Footer />
             </footer> */}
-          </body>
-        </AuthProviders>
-      </ReduxProvider>
+            </body>
+          </AuthProviders>
+        </ReduxProvider>
+      </QueryProdider>
     </html>
   );
 }
