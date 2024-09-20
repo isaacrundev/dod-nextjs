@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { ErrMsg } from "@/app";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z
   .object({
@@ -40,6 +41,7 @@ const SignupForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "", confirmPassword: "" },
   });
+  const { toast } = useToast();
 
   const onSubmit = async (data: FormInputs) => {
     setIsLoading(true);
@@ -52,12 +54,12 @@ const SignupForm = () => {
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        alert("Sign up Successfully!!");
+        toast({ description: "Sign up Successfully!!" });
         await signIn("credentials", { ...data, redirect: false });
         router.push("/dashboard");
       } else {
         const errMsg: ErrMsg = await res.json();
-        alert(errMsg.error);
+        toast({ description: errMsg.error });
         setIsLoading(false);
       }
       // else if (res.status === 409) {

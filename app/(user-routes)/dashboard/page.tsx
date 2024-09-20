@@ -40,7 +40,6 @@ export default function DashboardPage() {
           <CardTitle className="text-sm font-medium">
             Daily Diet Records
           </CardTitle>
-          {/* <CalendarIcon className="w-4 h-4 text-gray-500 dark:text-gray-400" /> */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
