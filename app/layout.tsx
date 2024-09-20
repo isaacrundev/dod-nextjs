@@ -6,6 +6,7 @@ import ReduxProvider from "./rtk/Provider";
 import { ReactNode } from "react";
 import Footer from "@/components/Footer";
 import QueryProdider from "@/components/QueryProdider";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               {/* <footer>
               <Footer />
             </footer> */}
+              <Toaster />
             </body>
           </AuthProviders>
         </ReduxProvider>

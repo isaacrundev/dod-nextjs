@@ -28,15 +28,19 @@ import { useRouter } from "next/navigation";
 import { FiMenu } from "react-icons/fi";
 import Image from "next/image";
 import { Pixelify_Sans } from "next/font/google";
+import { useToast } from "@/hooks/use-toast";
 
 const pixelifySans = Pixelify_Sans({ subsets: ["latin"] });
 
 const NavBar = () => {
   const { data: session } = useSession();
   const router = useRouter();
+  const { toast } = useToast();
+
   const handleSignOut = async () => {
     const res = await signOut({ redirect: false, callbackUrl: "/" });
-    alert("You've logged out successfully!!");
+    toast({ description: "You've logged out successfully!!" });
+    // alert("You've logged out successfully!!");
     router.push(res.url);
   };
 

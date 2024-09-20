@@ -128,15 +128,6 @@ export default function LineChart(
               {
                 id: "WeeklyCalData",
                 data: chartData,
-                //   [
-                //     { x: "Jan", y: 60 },
-                //     { x: "Feb", y: 48 },
-                //     { x: "Mar", y: 177 },
-                //     { x: "Apr", y: 78 },
-                //     { x: "May", y: 96 },
-                //     { x: "Jun", y: 204 },
-                //     { x: "Jun", y: 204 },
-                //   ],
               },
             ]}
             margin={{ top: 10, right: 10, bottom: 40, left: 40 }}
