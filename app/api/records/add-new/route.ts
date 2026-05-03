@@ -1,8 +1,7 @@
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "../../auth/[...nextauth]/route";
 
 export const foodDataRequestSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -44,7 +43,7 @@ export const foodDataRequestSchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.email)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 

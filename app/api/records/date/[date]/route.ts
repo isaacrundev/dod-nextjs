@@ -1,7 +1,6 @@
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(
   _req: Request,
@@ -11,7 +10,7 @@ export async function GET(
     NextResponse.json({ message: "Missing query string(s)" }, { status: 400 });
 
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.email)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
