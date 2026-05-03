@@ -1,8 +1,7 @@
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "../../../auth/[...nextauth]/route";
 
 export const foodDataRequestSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -34,7 +33,7 @@ const paramsSchema = z.object({
 });
 
 async function getCurrentUserId() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.email) return null;
 
   const user = await prisma.user.findUnique({
