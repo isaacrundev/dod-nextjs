@@ -6,9 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "postinstall": "prisma generate",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "test:ci": "jest --runInBand"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",

@@ -14,7 +14,6 @@ export const foodDataRequestSchema = z.object({
     .number()
     .nonnegative()
     .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
-
   carbs: z.coerce
     .number()
     .nonnegative()
@@ -28,53 +27,59 @@ export const foodDataRequestSchema = z.object({
     .positive()
     .int({ message: "Interger value only" }),
   intakeDate: z.coerce.string().datetime(),
-
-  // .refine((str) => str.length === 10, {
-  //   message: `Invalid "inTakeDate" length`,
-  // })
-  // .refine((str) => str[2] === "-" && str[5] === "-", {
-  //   message: `Invalid "inTakeDate" format`,
-  // }),
-  // .refine(
-  //   (str) => {
-  //     +str.slice(0, 2) <= 12;
-  //   },
-  //   { message: `Month error` }
-  // )
-  // .refine(
-  //   (str) => {
-  //     +str.slice(3, 5) <= 31;
-  //   },
-  //   { message: `Day error` }
-  // ),
 });
+
+const paramsSchema = z.object({
+  id: z.string().uuid(),
+});
+
+async function getCurrentUserId() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  return user?.id ?? null;
+}
+
+function validationError(error: z.ZodError) {
+  return NextResponse.json(
+    { error: "Invalid request", fields: error.flatten().fieldErrors },
+    { status: 400 },
+  );
+}
+
+function serverError() {
+  return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+}
 
 export async function GET(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
-  !params.id &&
-    NextResponse.json({ message: "Missing query string(s)" }, { status: 400 });
-
   try {
-    const { id } = params;
-
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email)
+    const { id } = paramsSchema.parse(params);
+    const userId = await getCurrentUserId();
+    if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-    const getUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const record = await prisma.record.findFirst({
+      where: { id, userId },
     });
 
-    const response = await prisma.record.findUnique({
-      where: { userId: getUser?.id, id },
-    });
+    if (!record) {
+      return NextResponse.json({ message: "Record not found" }, { status: 404 });
+    }
 
-    return NextResponse.json(response);
-  } catch (error: any) {
-    console.log(error);
-    return NextResponse.json({ message: error.message }, { status: 400 });
+    return NextResponse.json(record);
+  } catch (error) {
+    if (error instanceof z.ZodError) return validationError(error);
+    console.error(error);
+    return serverError();
   }
 }
 
@@ -83,38 +88,43 @@ export async function PUT(
   { params }: { params: { id: string } },
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email)
+    const { id } = paramsSchema.parse(params);
+    const userId = await getCurrentUserId();
+    if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const existingRecord = await prisma.record.findFirst({
+      where: { id, userId },
+      select: { id: true },
+    });
+
+    if (!existingRecord) {
+      return NextResponse.json({ message: "Record not found" }, { status: 404 });
+    }
 
     const reqBody = await req.json();
-
     const { foodName, protein, fats, carbs, calories, foodSize, intakeDate } =
       foodDataRequestSchema.parse(reqBody);
 
-    const getUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
     const response = await prisma.record.update({
-      where: { userId: getUser?.id, id: params.id },
+      where: { id },
       data: {
-        id: params.id,
         foodName,
         protein,
         fats,
         carbs,
         calories,
         foodSize,
-        userId: getUser!.id,
         intakeDate,
       },
     });
 
     return NextResponse.json(response);
-  } catch (error: any) {
-    console.log(error);
-    return NextResponse.json({ message: error.message }, { status: 400 });
+  } catch (error) {
+    if (error instanceof z.ZodError) return validationError(error);
+    console.error(error);
+    return serverError();
   }
 }
 
@@ -123,26 +133,29 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email)
+    const { id } = paramsSchema.parse(params);
+    const userId = await getCurrentUserId();
+    if (!userId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-    // const reqBody = await req.json();
-
-    // const { foodName, protein, fats, carbs, calories, foodSize, intakeDate } =
-    //   foodDataRequestSchema.parse(reqBody);
-
-    const getUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const existingRecord = await prisma.record.findFirst({
+      where: { id, userId },
+      select: { id: true },
     });
 
+    if (!existingRecord) {
+      return NextResponse.json({ message: "Record not found" }, { status: 404 });
+    }
+
     const response = await prisma.record.delete({
-      where: { userId: getUser?.id, id: params.id },
+      where: { id },
     });
 
     return NextResponse.json(response);
-  } catch (error: any) {
-    console.log(error);
-    return NextResponse.json({ message: error.message }, { status: 400 });
+  } catch (error) {
+    if (error instanceof z.ZodError) return validationError(error);
+    console.error(error);
+    return serverError();
   }
 }
