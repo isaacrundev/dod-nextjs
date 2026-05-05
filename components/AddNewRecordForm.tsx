@@ -69,6 +69,8 @@ export default function AddNewRecordForm({ item }: Props) {
         },
   });
 
+  const foodSizeField = register("foodSize", { valueAsNumber: true });
+
   const onSave = async (data: FoodInputSchema) => {
     if (!selectedDate) {
       toast({
@@ -205,6 +207,7 @@ export default function AddNewRecordForm({ item }: Props) {
           <Input
             disabled={!!item || isSaving}
             id="calories"
+            type="number"
             {...register("calories", { valueAsNumber: true })}
           />
           {errors.calories && (
@@ -216,6 +219,7 @@ export default function AddNewRecordForm({ item }: Props) {
           <Input
             disabled={!!item || isSaving}
             id="carbs"
+            type="number"
             {...register("carbs", { valueAsNumber: true })}
           />
           {errors.carbs && <p className="text-red-500 ">{errors.carbs.message}</p>}
@@ -225,6 +229,7 @@ export default function AddNewRecordForm({ item }: Props) {
           <Input
             disabled={!!item || isSaving}
             id="fats"
+            type="number"
             {...register("fats", { valueAsNumber: true })}
           />
           {errors.fats && <p className="text-red-500 ">{errors.fats.message}</p>}
@@ -234,6 +239,7 @@ export default function AddNewRecordForm({ item }: Props) {
           <Input
             disabled={!!item || isSaving}
             id="protein"
+            type="number"
             {...register("protein", { valueAsNumber: true })}
           />
           {errors.protein && (
@@ -244,9 +250,15 @@ export default function AddNewRecordForm({ item }: Props) {
           <Label htmlFor="food-size">Food Size (g or ml)</Label>
           <Input
             id="food-size"
+            type="number"
             disabled={isSaving}
-            {...register("foodSize", { valueAsNumber: true })}
-            onChange={item ? handleFoodSizeOnChange : undefined}
+            {...foodSizeField}
+            onChange={(e) => {
+              foodSizeField.onChange(e);
+              if (item) {
+                handleFoodSizeOnChange(e);
+              }
+            }}
           />
           {errors.foodSize && (
             <p className="text-red-500 ">{errors.foodSize.message}</p>
