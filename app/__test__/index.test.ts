@@ -129,6 +129,16 @@ describe("web mini studio safety regressions", () => {
     expect(errorReportSource).toContain("console.error");
   });
 
+  it("edit form derives loaded values and date from fetched record data", () => {
+    const source = readRepoFile("components/EditForm.tsx");
+
+    expect(source).toContain("values: formValues");
+    expect(source).toContain("setSelectedDateOverride(undefined)");
+    expect(source).toContain("normalizeCalendarDate(dbData.intakeDate)");
+    expect(source).toContain("...dbData,");
+    expect(source).toContain("...formData,");
+  });
+
   it("date handling is centralized in dayjs helpers instead of scattered string slicing", () => {
     const dateUtilsSource = readRepoFile("lib/date.ts");
     const dashboardSource = readRepoFile("app/(user-routes)/dashboard/page.tsx");

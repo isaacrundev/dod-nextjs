@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -12,7 +13,6 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
-import { useEffect, useState } from "react";
 import Loading from "@/app/loading";
 import { useToast } from "@/hooks/use-toast";
 import { getApiErrorMessage } from "@/lib/api-error";
@@ -40,17 +40,56 @@ const getData = async (id: string) => {
 
 export default function EditForm({ id }: { id: string }) {
   const [dbData, setDbData] = useState<ExistingData>();
-  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedDateOverride, setSelectedDateOverride] = useState<Date>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  const formValues = useMemo(
+    () =>
+      dbData
+        ? {
+            foodName: dbData.foodName,
+            calories: dbData.calories,
+            carbs: dbData.carbs,
+            fats: dbData.fats,
+            protein: dbData.protein,
+            foodSize: dbData.foodSize,
+          }
+        : undefined,
+    [dbData],
+  );
+
+  const selectedDate = useMemo(() => {
+    if (selectedDateOverride) {
+      return selectedDateOverride;
+    }
+
+    if (dbData) {
+      return normalizeCalendarDate(dbData.intakeDate);
+    }
+
+    return undefined;
+  }, [dbData, selectedDateOverride]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FoodInputSchema>({
+    resolver: zodResolver(foodInputSchema),
+    values: formValues,
+  });
 
   useEffect(() => {
     let mounted = true;
 
     getData(id)
       .then((data) => {
-        if (mounted) setDbData(data);
+        if (mounted) {
+          setDbData(data);
+          setSelectedDateOverride(undefined);
+        }
       })
       .catch((error) => {
         reportError(error, "EditForm.getData");
@@ -65,20 +104,6 @@ export default function EditForm({ id }: { id: string }) {
       mounted = false;
     };
   }, [id, router, toast]);
-
-  useEffect(() => {
-    if (dbData) {
-      setSelectedDate(normalizeCalendarDate(new Date(dbData.intakeDate)));
-    }
-  }, [dbData]);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FoodInputSchema>({
-    resolver: zodResolver(foodInputSchema),
-  });
 
   const onUpdate = async (formData: FoodInputSchema) => {
     if (!dbData || !selectedDate) {
@@ -159,7 +184,9 @@ export default function EditForm({ id }: { id: string }) {
                     mode="single"
                     selected={selectedDate}
                     onSelect={(date) =>
-                      setSelectedDate(date ? normalizeCalendarDate(date) : undefined)
+                      setSelectedDateOverride(
+                        date ? normalizeCalendarDate(date) : undefined,
+                      )
                     }
                     initialFocus
                   />
@@ -179,7 +206,6 @@ export default function EditForm({ id }: { id: string }) {
               type="text"
               disabled={isSubmitting}
               {...register("foodName")}
-              defaultValue={dbData.foodName}
             />
             {errors.foodName && (
               <p className="text-red-500 ">{errors.foodName.message}</p>
@@ -192,7 +218,6 @@ export default function EditForm({ id }: { id: string }) {
               type="number"
               disabled={isSubmitting}
               {...register("calories", { valueAsNumber: true })}
-              defaultValue={dbData.calories}
             />
             {errors.calories && (
               <p className="text-red-500 ">{errors.calories.message}</p>
@@ -205,7 +230,6 @@ export default function EditForm({ id }: { id: string }) {
               type="number"
               disabled={isSubmitting}
               {...register("carbs", { valueAsNumber: true })}
-              defaultValue={dbData.carbs}
             />
             {errors.carbs && <p className="text-red-500 ">{errors.carbs.message}</p>}
           </div>
@@ -216,7 +240,6 @@ export default function EditForm({ id }: { id: string }) {
               type="number"
               disabled={isSubmitting}
               {...register("fats", { valueAsNumber: true })}
-              defaultValue={dbData.fats}
             />
             {errors.fats && <p className="text-red-500 ">{errors.fats.message}</p>}
           </div>
@@ -227,7 +250,6 @@ export default function EditForm({ id }: { id: string }) {
               type="number"
               disabled={isSubmitting}
               {...register("protein", { valueAsNumber: true })}
-              defaultValue={dbData.protein}
             />
             {errors.protein && (
               <p className="text-red-500 ">{errors.protein.message}</p>
@@ -240,7 +262,6 @@ export default function EditForm({ id }: { id: string }) {
               type="number"
               disabled={isSubmitting}
               {...register("foodSize", { valueAsNumber: true })}
-              defaultValue={dbData.foodSize}
             />
             {errors.foodSize && (
               <p className="text-red-500 ">{errors.foodSize.message}</p>

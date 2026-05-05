@@ -48,7 +48,7 @@ export function getTodayDate() {
  * 把任意 Date 正規化成「台北時區該日 00:00」。
  * 適合放在 onSelect、初始化 state 等地方。
  */
-export function normalizeCalendarDate(date: Date) {
+export function normalizeCalendarDate(date: Date | string) {
   return parseDateKey(getDateKey(date)).toDate();
 }
 
