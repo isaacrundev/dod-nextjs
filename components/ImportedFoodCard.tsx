@@ -1,23 +1,16 @@
 "use client";
 
 import { roundToSecondPlace } from "@/app/utils/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
 import { Button } from "./ui/button";
 import { FetchedFoodData, Product } from "@/app";
 import noImage from "@/public/img/no-image-icon-23494.png";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "@/app/rtk/store";
+import { AppDispatch } from "@/app/rtk/store";
 import { add } from "@/app/rtk/slices/importedFood";
-import { Dispatch, SVGProps, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, SVGProps } from "react";
 import { useSession } from "next-auth/react";
+import { getProductName } from "@/lib/food-data";
 
 type Props = {
   item: Product;
@@ -31,7 +24,6 @@ export default function ImportedFoodCard({
   setIsImported,
 }: Props) {
   const { data: session } = useSession();
-
   const dispatch = useDispatch<AppDispatch>();
 
   const handleCardClick = () => {
@@ -40,29 +32,25 @@ export default function ImportedFoodCard({
     setIsImported(true);
   };
 
+  const productName = getProductName(item);
+  const imageSrc = item.image_small_url || noImage;
+
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow-md dark:bg-gray-800">
       <Image
         className="h-48 w-full object-cover"
-        height="200"
-        src={item.image_small_url ? item.image_small_url : noImage}
+        height={200}
+        src={imageSrc}
         style={{
           aspectRatio: "300/200",
           objectFit: "contain",
         }}
-        width="300"
-        alt={item.product_name_en ? item.product_name_en : "no_alt"}
-        placeholder="blur"
-        blurDataURL={item.image_small_url}
+        width={300}
+        alt={productName}
+        unoptimized={typeof imageSrc === "string"}
       />
       <div className="space-y-2 p-4">
-        <h3 className="text-lg font-semibold">
-          {item.product_name_en
-            ? item.product_name_en
-            : item.product_name
-              ? item.product_name
-              : "(No Food Name Found)"}
-        </h3>
+        <h3 className="text-lg font-semibold">{productName}</h3>
         <div className="flex items-center gap-2">
           <FlameIcon className="h-5 w-5 text-red-500" />
           <span>
@@ -87,7 +75,6 @@ export default function ImportedFoodCard({
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400">per 100g</p>
         {session && (
-          // <CardFooter className="p-3 pt-6">
           <div className="flex items-center justify-center pt-6">
             <Button
               type="button"
@@ -97,54 +84,9 @@ export default function ImportedFoodCard({
               Import
             </Button>
           </div>
-          // </CardFooter>
         )}
       </div>
     </div>
-    // <Card className="flex flex-col items-center justify-between w-5/6 max-w-xs px-1 py-5 bg-gray-100 shadow-lg h-96">
-    //   <Image
-    //     className="w-auto h-auto "
-    //     width={100}
-    //     height={100}
-    //     src={item.image_small_url ? item.image_small_url : noImage}
-    //     alt={item.product_name_en ? item.product_name_en : "no_alt"}
-    //     placeholder="blur"
-    //     blurDataURL={item.image_small_url}
-    //   />
-    //   <CardHeader className="py-2 text-center">
-    //     <CardTitle className="line-clamp-2">
-    //       {item.product_name_en
-    //         ? item.product_name_en
-    //         : item.product_name
-    //           ? item.product_name
-    //           : "(No Food Name Found)"}
-    //     </CardTitle>
-    //     <CardDescription>Per 100g/ml</CardDescription>
-    //   </CardHeader>
-    //   <CardContent className="p-0">
-    //     <ul>
-    //       <li>
-    //         Calories: {roundToSecondPlace(item.nutriments["energy-kcal_100g"])}
-    //       </li>
-    //       <li>
-    //         carbs: {roundToSecondPlace(item.nutriments.carbohydrates_100g)}
-    //       </li>
-    //       <li>Fats: {roundToSecondPlace(item.nutriments.fat_100g)}</li>
-    //       <li>Protein: {roundToSecondPlace(item.nutriments.proteins_100g)}</li>
-    //     </ul>
-    //   </CardContent>
-    //   {session && (
-    //     <CardFooter className="p-3 pt-6">
-    //       <Button
-    //         type="button"
-    //         className="h-10 text-white rounded-md w-28 bg-primary"
-    //         onClick={handleCardClick}
-    //       >
-    //         Import
-    //       </Button>
-    //     </CardFooter>
-    //   )}
-    // </Card>
   );
 }
 
@@ -232,7 +174,12 @@ function WeightIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
     >
       <circle cx="12" cy="5" r="3" />
-      <path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z" />
+      <path d="m12 22 4-9" />
+      <path d="m12 13 4-9" />
+      <path d="m12 22-4-9" />
+      <path d="m12 13-4-9" />
+      <path d="M4.83 14.83a4 4 0 0 0 5.66 0" />
+      <path d="M13.51 14.83a4 4 0 0 0 5.66 0" />
     </svg>
   );
 }

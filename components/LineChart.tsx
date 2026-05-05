@@ -1,20 +1,10 @@
 "use client";
 
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/huCtvLs8KLb
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-
 import { Datum, ResponsiveLine } from "@nivo/line";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ClassAttributes,
-  HTMLAttributes,
-  JSX,
-  useEffect,
-  useState,
-} from "react";
+import { ClassAttributes, HTMLAttributes, JSX, useEffect, useState } from "react";
+import { getApiErrorMessage } from "@/lib/api-error";
+import { formatMonthDay, getDateKey, getLastNDateKeys } from "@/lib/date";
 
 type DBData = {
   id: string;
@@ -35,63 +25,43 @@ type CaloriesByDate = {
 };
 
 function processCaloriesData(data: DBData[]) {
-  // Initialize an object to hold the sum of calories for each date
   const caloriesByDate: CaloriesByDate = {};
 
   data.forEach((each: DBData) => {
-    // Convert intakeDate to local time and format as yyyy-mm-dd
-    const date = new Date(each.intakeDate);
-    const localDateString = date.toLocaleDateString("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-    });
+    const dateKey = getDateKey(each.intakeDate);
 
-    if (!caloriesByDate[localDateString]) {
-      caloriesByDate[localDateString] = 0;
+    if (!caloriesByDate[dateKey]) {
+      caloriesByDate[dateKey] = 0;
     }
-    caloriesByDate[localDateString] += each.calories;
+    caloriesByDate[dateKey] += each.calories;
   });
 
-  const processedData = Object.keys(caloriesByDate).map((date) => ({
-    x: date,
-    y: caloriesByDate[date],
+  return Object.keys(caloriesByDate).map((dateKey) => ({
+    x: dateKey,
+    y: caloriesByDate[dateKey],
   }));
-
-  return processedData;
-}
-
-function getLast7Days() {
-  const result = [];
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    const localDateString = date.toLocaleDateString("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-    });
-    result.push(localDateString);
-  }
-  return result;
 }
 
 function formatDataForChart(processedData: Datum[]) {
-  const last7Days = getLast7Days();
-  return last7Days.map((date) => {
-    const entry = processedData.find((d) => d.x === date);
+  const last7Days = getLastNDateKeys(7);
+
+  return last7Days.map((dateKey) => {
+    const entry = processedData.find((d) => d.x === dateKey);
     return {
-      x: date,
+      x: formatMonthDay(dateKey),
       y: entry ? entry.y : 0,
     };
   });
 }
 
 const fetchWeekly = async () => {
-  try {
-    const res = await fetch("/api/records/date/weekly");
-    return res.json();
-  } catch (error) {
-    console.error(error);
+  const res = await fetch("/api/records/date/weekly");
+
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res, "Failed to load weekly chart data."));
   }
+
+  return res.json();
 };
 
 export default function LineChart(
@@ -113,66 +83,57 @@ export default function LineChart(
     }
   }, [weeklyData]);
 
-  useEffect(() => {
-    if (chartData) {
-      console.log(chartData);
-    }
-  }, [chartData]);
-  return (
-    <>
-      {chartData ? (
-        <div {...props}>
-          <ResponsiveLine
-            enablePoints={false}
-            data={[
-              {
-                id: "WeeklyCalData",
-                data: chartData,
-              },
-            ]}
-            margin={{ top: 10, right: 10, bottom: 40, left: 40 }}
-            xScale={{
-              type: "point",
-            }}
-            yScale={{
-              type: "linear",
-            }}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-              tickSize: 0,
-              tickPadding: 16,
-            }}
-            axisLeft={{
-              tickSize: 0,
-              tickValues: 5,
-              tickPadding: 16,
-            }}
-            colors={["#e11d48"]}
-            pointSize={6}
-            useMesh={true}
-            gridYValues={6}
-            theme={{
-              tooltip: {
-                chip: {
-                  borderRadius: "9999px",
-                },
-                container: {
-                  fontSize: "12px",
-                  textTransform: "capitalize",
-                  borderRadius: "6px",
-                },
-              },
-              grid: {
-                line: {
-                  stroke: "#f3f4f6",
-                },
-              },
-            }}
-            role="application"
-          />
-        </div>
-      ) : null}
-    </>
-  );
+  return chartData ? (
+    <div {...props}>
+      <ResponsiveLine
+        enablePoints={false}
+        data={[
+          {
+            id: "WeeklyCalData",
+            data: chartData,
+          },
+        ]}
+        margin={{ top: 10, right: 10, bottom: 40, left: 40 }}
+        xScale={{
+          type: "point",
+        }}
+        yScale={{
+          type: "linear",
+        }}
+        axisTop={null}
+        axisRight={null}
+        axisBottom={{
+          tickSize: 0,
+          tickPadding: 16,
+        }}
+        axisLeft={{
+          tickSize: 0,
+          tickValues: 5,
+          tickPadding: 16,
+        }}
+        colors={["#e11d48"]}
+        pointSize={6}
+        useMesh={true}
+        gridYValues={6}
+        theme={{
+          tooltip: {
+            chip: {
+              borderRadius: "9999px",
+            },
+            container: {
+              fontSize: "12px",
+              textTransform: "capitalize",
+              borderRadius: "6px",
+            },
+          },
+          grid: {
+            line: {
+              stroke: "#f3f4f6",
+            },
+          },
+        }}
+        role="application"
+      />
+    </div>
+  ) : null;
 }

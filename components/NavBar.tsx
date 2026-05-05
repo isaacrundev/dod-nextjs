@@ -7,19 +7,13 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { signOut, useSession } from "next-auth/react";
@@ -40,174 +34,132 @@ const NavBar = () => {
   const handleSignOut = async () => {
     const res = await signOut({ redirect: false, callbackUrl: "/" });
     toast({ description: "You've logged out successfully!!" });
-    // alert("You've logged out successfully!!");
     router.push(res.url);
+    router.refresh();
   };
 
   return (
-    <>
-      <div className="flex items-center justify-between px-5 py-4 shadow-sm md:px-20 md:py-0">
-        <Link href="/" legacyBehavior passHref>
-          <div className="flex items-center gap-3 hover:cursor-pointer">
-            <Image
-              priority
-              src={dodLogo}
-              alt="dod-logo"
-              width={60}
-              height={60}
-            />
-            <p className={`${pixelifySans.className} text-2xl`}>DietOrDie</p>
-          </div>
-        </Link>
-        <NavigationMenu className="hidden md:block">
-          <NavigationMenuList className="flex items-center h-20 gap-3">
-            {session ? (
-              <>
-                <NavigationMenuItem>
-                  <Link href="/dashboard" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Dashboard
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/add-new" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Add New
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    className={
-                      navigationMenuTriggerStyle() + " hover:cursor-pointer"
-                    }
-                    onClick={handleSignOut}
-                  >
-                    Logout
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </>
-            ) : (
-              <>
-                <NavigationMenuItem>
-                  <Link href="/" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Home
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/food-data" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Food Data
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link href="/login-signup" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Login/Signup
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              </>
-            )}
-          </NavigationMenuList>
-        </NavigationMenu>
-        <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger>
-              <FiMenu className="w-8 h-8" />
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                {/* <SheetTitle>Good day!</SheetTitle> */}
-                <SheetDescription>{session?.user?.email}</SheetDescription>
-              </SheetHeader>
+    <div className="flex items-center justify-between px-5 py-4 shadow-sm md:px-20 md:py-0">
+      <Link href="/" className="flex items-center gap-3 hover:cursor-pointer">
+        <Image priority src={dodLogo} alt="dod-logo" width={60} height={60} />
+        <p className={`${pixelifySans.className} text-2xl`}>DietOrDie</p>
+      </Link>
+      <NavigationMenu className="hidden md:block">
+        <NavigationMenuList className="flex h-20 items-center gap-3">
+          {session ? (
+            <>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/dashboard">Dashboard</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/add-new">Add New</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <button
+                  type="button"
+                  className={navigationMenuTriggerStyle() + " hover:cursor-pointer"}
+                  onClick={handleSignOut}
+                >
+                  Logout
+                </button>
+              </NavigationMenuItem>
+            </>
+          ) : (
+            <>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/">Home</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/food-data">Food Data</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/login-signup">Login/Signup</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </>
+          )}
+        </NavigationMenuList>
+      </NavigationMenu>
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <button type="button" aria-label="Open navigation menu">
+              <FiMenu className="h-8 w-8" />
+            </button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetDescription>{session?.user?.email}</SheetDescription>
+            </SheetHeader>
 
-              <NavigationMenu className="pt-10 mx-auto">
-                <NavigationMenuList className="flex flex-col gap-5">
-                  {session ? (
-                    <>
-                      <NavigationMenuItem>
-                        <Link href="/dashboard" legacyBehavior passHref>
-                          <NavigationMenuLink
-                            className={navigationMenuTriggerStyle()}
-                          >
-                            <SheetClose>Dashboard</SheetClose>
-                          </NavigationMenuLink>
+            <NavigationMenu className="mx-auto pt-10">
+              <NavigationMenuList className="flex flex-col gap-5">
+                {session ? (
+                  <>
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                        <Link href="/dashboard">
+                          <SheetClose>Dashboard</SheetClose>
                         </Link>
-                      </NavigationMenuItem>
-                      <NavigationMenuItem>
-                        <Link href="/add-new" legacyBehavior passHref>
-                          <NavigationMenuLink
-                            className={navigationMenuTriggerStyle()}
-                          >
-                            <SheetClose>Add New</SheetClose>
-                          </NavigationMenuLink>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                        <Link href="/add-new">
+                          <SheetClose>Add New</SheetClose>
                         </Link>
-                      </NavigationMenuItem>
-                      <NavigationMenuItem>
-                        <NavigationMenuLink
-                          className={
-                            navigationMenuTriggerStyle() +
-                            " hover:cursor-pointer"
-                          }
-                          onClick={handleSignOut}
-                        >
-                          <SheetClose>Logout</SheetClose>
-                        </NavigationMenuLink>
-                      </NavigationMenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <NavigationMenuItem>
-                        <Link href="/" legacyBehavior passHref>
-                          <NavigationMenuLink
-                            className={navigationMenuTriggerStyle()}
-                          >
-                            <SheetClose>Home</SheetClose>
-                          </NavigationMenuLink>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <button
+                        type="button"
+                        className={navigationMenuTriggerStyle() + " hover:cursor-pointer"}
+                        onClick={handleSignOut}
+                      >
+                        <SheetClose>Logout</SheetClose>
+                      </button>
+                    </NavigationMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                        <Link href="/">
+                          <SheetClose>Home</SheetClose>
                         </Link>
-                      </NavigationMenuItem>
-                      <NavigationMenuItem>
-                        <Link href="/food-data" legacyBehavior passHref>
-                          <NavigationMenuLink
-                            className={navigationMenuTriggerStyle()}
-                          >
-                            <SheetClose>Food Search</SheetClose>
-                          </NavigationMenuLink>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                        <Link href="/food-data">
+                          <SheetClose>Food Search</SheetClose>
                         </Link>
-                      </NavigationMenuItem>
-                      <NavigationMenuItem>
-                        <Link href="/login-signup" legacyBehavior passHref>
-                          <NavigationMenuLink
-                            className={navigationMenuTriggerStyle()}
-                          >
-                            <SheetClose>Login/Signup</SheetClose>
-                          </NavigationMenuLink>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                        <Link href="/login-signup">
+                          <SheetClose>Login/Signup</SheetClose>
                         </Link>
-                      </NavigationMenuItem>
-                    </>
-                  )}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </SheetContent>
-          </Sheet>
-        </div>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  </>
+                )}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </SheetContent>
+        </Sheet>
       </div>
-    </>
+    </div>
   );
 };
 

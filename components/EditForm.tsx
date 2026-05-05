@@ -1,6 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -15,6 +14,14 @@ import { Calendar } from "./ui/calendar";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { useEffect, useState } from "react";
 import Loading from "@/app/loading";
+import { useToast } from "@/hooks/use-toast";
+import { getApiErrorMessage } from "@/lib/api-error";
+import {
+  formatDisplayDate,
+  getDateKey,
+  normalizeCalendarDate,
+} from "@/lib/date";
+import { reportError } from "@/lib/error-report";
 
 interface ExistingData extends FoodInputSchema {
   intakeDate: Date;
@@ -22,75 +29,100 @@ interface ExistingData extends FoodInputSchema {
 }
 
 const getData = async (id: string) => {
-  try {
-    const res = await fetch(`/api/records/id/${id}`);
-    if (res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.statusText);
-    }
-  } catch (error) {
-    console.error(error);
+  const res = await fetch(`/api/records/id/${id}`);
+
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res, "Failed to load record."));
   }
+
+  return res.json();
 };
 
 export default function EditForm({ id }: { id: string }) {
   const [dbData, setDbData] = useState<ExistingData>();
   const [selectedDate, setSelectedDate] = useState<Date>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
-    getData(id).then((data) => setDbData(data));
-  }, [id]);
+    let mounted = true;
+
+    getData(id)
+      .then((data) => {
+        if (mounted) setDbData(data);
+      })
+      .catch((error) => {
+        reportError(error, "EditForm.getData");
+        toast({
+          description: "Unable to load this record.",
+          variant: "destructive",
+        });
+        router.push("/dashboard");
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [id, router, toast]);
 
   useEffect(() => {
     if (dbData) {
-      setSelectedDate(new Date(dbData.intakeDate));
+      setSelectedDate(normalizeCalendarDate(new Date(dbData.intakeDate)));
     }
   }, [dbData]);
 
-  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FoodInputSchema>({
     resolver: zodResolver(foodInputSchema),
-    // defaultValues: {
-    //   foodName: formData?.foodName,
-    //   protein: formData?.protein,
-    //   fats: formData?.fats,
-    //   carbs: formData?.carbs,
-    //   calories: formData?.calories,
-    //   foodSize: formData?.foodSize,
-    // },
   });
 
-  // const mmddyyyy = format(selectedDate!, "MM-dd-yyyy");
-
   const onUpdate = async (formData: FoodInputSchema) => {
-    const combined = {
-      ...dbData,
-      ...formData,
-      intakeDate: selectedDate?.toISOString(),
-    };
+    if (!dbData || !selectedDate) {
+      toast({
+        description: "Record data is still loading.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      const res = await fetch(`/api/records/id/${combined.id}`, {
+      const res = await fetch(`/api/records/id/${dbData.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(combined),
+        body: JSON.stringify({
+          ...dbData,
+          ...formData,
+          intakeDate: getDateKey(selectedDate),
+        }),
       });
 
-      if (res.ok) {
-        alert("Edited Successfully!!");
-        router.push("/dashboard");
-      } else {
-        alert("Something went wrong. Please try again later.");
-        throw new Error(res.statusText);
+      if (!res.ok) {
+        toast({
+          description: await getApiErrorMessage(res, "Failed to update record."),
+          variant: "destructive",
+        });
+        return;
       }
+
+      toast({ description: "Record updated successfully!" });
+      router.push("/dashboard");
+      router.refresh();
     } catch (error) {
-      console.error(error);
+      reportError(error, "EditForm.onUpdate");
+      toast({
+        description: "Unable to update right now. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -103,7 +135,7 @@ export default function EditForm({ id }: { id: string }) {
           onSubmit={handleSubmit(onUpdate)}
           className="flex flex-col items-center justify-center gap-3"
         >
-          <p className="text-lg font-bold"> Edit Food Data</p>
+          <p className="text-lg font-bold">Edit Food Data</p>
           <div className="flex flex-col space-y-1">
             <Label htmlFor="intake-date">Date</Label>
             <div>
@@ -111,27 +143,28 @@ export default function EditForm({ id }: { id: string }) {
                 <PopoverTrigger asChild>
                   <Button
                     id="intake-date"
-                    variant={"outline"}
+                    variant="outline"
                     className={cn(
                       " justify-start text-left font-normal",
                       !selectedDate && "text-muted-foreground",
                     )}
                   >
-                    <CalendarIcon className="w-4 h-4 mr-2" />
-                    {selectedDate && format(selectedDate, "MM/dd/yyyy")}
-                    {/* {selectedDate?.toString().toLocaleString().slice(0, 10)} */}
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate && formatDisplayDate(selectedDate)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     required
                     mode="single"
-                    selected={selectedDate!}
-                    onSelect={setSelectedDate}
+                    selected={selectedDate}
+                    onSelect={(date) =>
+                      setSelectedDate(date ? normalizeCalendarDate(date) : undefined)
+                    }
                     initialFocus
                   />
                   <div className="flex justify-center pb-3">
-                    <PopoverClose className="px-5 py-2 text-white rounded-lg bg-primary">
+                    <PopoverClose className="rounded-lg bg-primary px-5 py-2 text-white">
                       Apply
                     </PopoverClose>
                   </div>
@@ -144,8 +177,9 @@ export default function EditForm({ id }: { id: string }) {
             <Input
               id="foodName"
               type="text"
+              disabled={isSubmitting}
               {...register("foodName")}
-              defaultValue={dbData?.foodName}
+              defaultValue={dbData.foodName}
             />
             {errors.foodName && (
               <p className="text-red-500 ">{errors.foodName.message}</p>
@@ -156,8 +190,9 @@ export default function EditForm({ id }: { id: string }) {
             <Input
               id="calories"
               type="number"
+              disabled={isSubmitting}
               {...register("calories", { valueAsNumber: true })}
-              defaultValue={dbData?.calories}
+              defaultValue={dbData.calories}
             />
             {errors.calories && (
               <p className="text-red-500 ">{errors.calories.message}</p>
@@ -168,32 +203,31 @@ export default function EditForm({ id }: { id: string }) {
             <Input
               id="carbs"
               type="number"
+              disabled={isSubmitting}
               {...register("carbs", { valueAsNumber: true })}
-              defaultValue={dbData?.carbs}
+              defaultValue={dbData.carbs}
             />
-            {errors.carbs && (
-              <p className="text-red-500 ">{errors.carbs.message}</p>
-            )}
+            {errors.carbs && <p className="text-red-500 ">{errors.carbs.message}</p>}
           </div>
           <div className="space-y-1">
             <Label htmlFor="fats">Fats (g)</Label>
             <Input
               id="fats"
               type="number"
+              disabled={isSubmitting}
               {...register("fats", { valueAsNumber: true })}
-              defaultValue={dbData?.fats}
+              defaultValue={dbData.fats}
             />
-            {errors.fats && (
-              <p className="text-red-500 ">{errors.fats.message}</p>
-            )}
+            {errors.fats && <p className="text-red-500 ">{errors.fats.message}</p>}
           </div>
           <div className="space-y-1">
             <Label htmlFor="protein">Protein (g)</Label>
             <Input
               id="protein"
               type="number"
+              disabled={isSubmitting}
               {...register("protein", { valueAsNumber: true })}
-              defaultValue={dbData?.protein}
+              defaultValue={dbData.protein}
             />
             {errors.protein && (
               <p className="text-red-500 ">{errors.protein.message}</p>
@@ -204,15 +238,16 @@ export default function EditForm({ id }: { id: string }) {
             <Input
               id="food-size"
               type="number"
+              disabled={isSubmitting}
               {...register("foodSize", { valueAsNumber: true })}
-              defaultValue={dbData?.foodSize}
+              defaultValue={dbData.foodSize}
             />
             {errors.foodSize && (
               <p className="text-red-500 ">{errors.foodSize.message}</p>
             )}
           </div>
-          <Button className="w-28" type="submit">
-            Update
+          <Button className="w-28" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Updating..." : "Update"}
           </Button>
         </form>
       )}

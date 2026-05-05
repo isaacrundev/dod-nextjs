@@ -1,31 +1,32 @@
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getCurrentUserId } from "@/lib/auth-user";
+import {
+  serverErrorResponse,
+  unauthorizedResponse,
+} from "@/lib/api-response";
+import { getLastNDaysStart } from "@/lib/date";
+import { reportError } from "@/lib/error-report";
 
 export async function GET(_req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.email)
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return unauthorizedResponse();
+    }
 
-    const getUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    const today = new Date();
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 7);
+    const sevenDaysAgo = getLastNDaysStart(7);
 
     const res = await prisma.record.findMany({
       where: {
-        userId: getUser?.id,
+        userId,
         intakeDate: { gte: sevenDaysAgo },
       },
     });
 
     return NextResponse.json(res);
-  } catch (error: any) {
-    console.log(error);
-    return NextResponse.json({ message: error.message }, { status: 400 });
+  } catch (error) {
+    reportError(error, "records.date.weekly.GET");
+    return serverErrorResponse();
   }
 }

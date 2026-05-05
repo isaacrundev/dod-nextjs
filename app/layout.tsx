@@ -4,8 +4,7 @@ import { Inter } from "next/font/google";
 import AuthProviders from "@/components/AuthProviders";
 import ReduxProvider from "./rtk/Provider";
 import { ReactNode } from "react";
-import Footer from "@/components/Footer";
-import QueryProdider from "@/components/QueryProdider";
+import QueryProvider from "@/components/QueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -17,7 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <QueryProdider>
+      <QueryProvider>
         <ReduxProvider>
           <AuthProviders>
             <body className={inter.className}>
@@ -27,15 +26,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </nav>
               </header>
               <main>{children}</main>
-              {/* <main className="min-h-screen px-10 py-5 md:px-20">{children}</main> */}
-              {/* <footer>
-              <Footer />
-            </footer> */}
               <Toaster />
             </body>
           </AuthProviders>
         </ReduxProvider>
-      </QueryProdider>
+      </QueryProvider>
     </html>
   );
 }

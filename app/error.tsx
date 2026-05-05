@@ -1,7 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect } from "react";
+import { reportError } from "@/lib/error-report";
 
 export default function Error({
   error,
@@ -11,21 +13,22 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error);
+    reportError(error, "app.error");
   }, [error]);
 
   return (
-    <div>
-      <h2>Something went wrong!</h2>
-      <Button
-        onClick={
-          // Attempt to recover by trying to re-render the segment
-          () => reset()
-        }
-      >
-        Try again
-      </Button>
+    <div className="flex min-h-[60vh] items-center justify-center px-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Something went wrong</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            We hit an unexpected error while loading this page.
+          </p>
+          <Button onClick={() => reset()}>Try again</Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

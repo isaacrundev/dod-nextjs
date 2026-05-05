@@ -3,12 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import { z } from "zod";
-
-const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+import { credentialsSchema } from "@/lib/auth-schemas";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -25,24 +20,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const { email: inputEmail, password: inputPassword } =
           credentialsSchema.parse(credentials);
 
-        const TargetUser = await prisma.user.findUnique({
+        const targetUser = await prisma.user.findUnique({
           where: {
             email: inputEmail,
           },
+          select: {
+            id: true,
+            email: true,
+            password: true,
+          },
         });
 
-        if (!TargetUser || !TargetUser?.password) {
+        if (!targetUser?.password) {
           throw new Error("User not found");
         }
 
         const passwordIsMatch = await bcrypt.compare(
           inputPassword,
-          TargetUser.password
+          targetUser.password,
         );
+
         if (!passwordIsMatch) {
           throw new Error("Incorrect username/password");
         }
-        return TargetUser;
+
+        return {
+          id: targetUser.id,
+          email: targetUser.email,
+        };
       },
     }),
   ],
