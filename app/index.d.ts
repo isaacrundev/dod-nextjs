@@ -14,8 +14,10 @@ export type Product = {
 };
 
 export type FetchedFoodData = {
+  count: number;
+  page: number;
   page_count: number;
+  page_size: number;
+  skip: number;
   products: Product[];
 };
-
-export type ErrMsg = { error: string };

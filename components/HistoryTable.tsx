@@ -4,24 +4,30 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { FoodInputSchema } from "./FoodData";
-import { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import useScreenSize from "@/app/utils/useScreenSize";
+import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import { roundToSecondPlace } from "@/app/utils/utils";
 import { Button } from "./ui/button";
-import { DialogClose } from "@radix-ui/react-dialog";
-import EditForm from "./EditForm";
-import { useRouter } from "next/navigation";
-import { format } from "date-fns";
 import Link from "next/link";
 import Loading from "@/app/loading";
+import { useToast } from "@/hooks/use-toast";
+import { getApiErrorMessage } from "@/lib/api-error";
+import { getDateKey } from "@/lib/date";
+import { reportError } from "@/lib/error-report";
 
 interface Record extends FoodInputSchema {
   id: string;
@@ -29,31 +35,27 @@ interface Record extends FoodInputSchema {
 }
 
 const tableHead = [
-  { mobile: "Name", desktop: "Name" },
-  { mobile: "P", desktop: "Protein" },
-  { mobile: "C", desktop: "Carbs" },
-  { mobile: "F", desktop: "Fats" },
-  { mobile: "Cals", desktop: "Calories" },
-  { mobile: "Edit", desktop: "Edit" },
-  { mobile: "Delete", desktop: "Delete" },
+  "Name",
+  "Protein",
+  "Carbs",
+  "Fats",
+  "Calories",
+  "Edit",
+  "Delete",
 ];
 
-const fetchHistory = async (date: string) => {
-  try {
-    const res = await fetch(`/api/records/date/${date}`, {
-      method: "GET",
-    });
+const fetchHistory = async (dateKey: string) => {
+  const res = await fetch(`/api/records/date/${dateKey}`, {
+    method: "GET",
+  });
 
-    if (res.ok) {
-      return res.json();
-    } else {
-      // setRecords([]);
-      throw new Error(res.statusText);
-    }
-  } catch (error) {
-    console.error(error);
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res, "Failed to load records."));
   }
+
+  return res.json();
 };
+
 export default function HistoryTable({
   selectedDate,
 }: {
@@ -61,39 +63,69 @@ export default function HistoryTable({
 }) {
   const [records, setRecords] = useState<Record[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const screenSize = useScreenSize();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    setIsLoading(true);
-    if (selectedDate) {
-      fetchHistory(`${selectedDate.toISOString().slice(0, 13)}:00:00Z`)
-        .then((data) => setRecords(data))
-        .finally(() => setIsLoading(false));
+    if (!selectedDate) {
+      setRecords([]);
+      return;
     }
-  }, [selectedDate]);
+
+    let mounted = true;
+    setIsLoading(true);
+
+    fetchHistory(getDateKey(selectedDate))
+      .then((data) => {
+        if (mounted) setRecords(data);
+      })
+      .catch((error) => {
+        reportError(error, "HistoryTable.fetchHistory");
+        if (mounted) {
+          setRecords([]);
+          toast({
+            description: "Unable to load records for this date.",
+            variant: "destructive",
+          });
+        }
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedDate, toast]);
 
   const handleDelete = async (id: string) => {
+    setDeletingId(id);
+
     try {
       const res = await fetch(`/api/records/id/${id}`, {
         method: "DELETE",
       });
-      if (res.ok) {
-        alert("Record deleted successfully!!");
-        // format(selectedDate, "YYYY-MM-DD");
 
-        // fetchHistory(selectedDate.slice(0, 10));
-      } else {
-        alert("Something went wrong. Please try again later.");
-        throw new Error(res.statusText);
+      if (!res.ok) {
+        toast({
+          description: await getApiErrorMessage(res, "Failed to delete record."),
+          variant: "destructive",
+        });
+        return;
       }
+
+      setRecords((current) => current.filter((record) => record.id !== id));
+      toast({ description: "Record deleted successfully!" });
     } catch (error) {
-      console.log(error);
+      reportError(error, "HistoryTable.handleDelete");
+      toast({
+        description: "Unable to delete right now. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
-
-  // useEffect(() => {
-  //   console.log(records);
-  // }, [records]);
 
   return (
     <>
@@ -103,25 +135,13 @@ export default function HistoryTable({
         <Table>
           <TableHeader>
             <TableRow>
-              {/* {screenSize.width >= 768
-                ? tableHead.map((i) => (
-                    <TableHead key={i.desktop} suppressHydrationWarning>
-                      {i.desktop}
-                    </TableHead>
-                  ))
-                : tableHead.map((i) => (
-                    <TableHead key={i.mobile} suppressHydrationWarning>
-                      {i.mobile}
-                    </TableHead>
-                  ))} */}
-              {tableHead.map((i) => (
-                <TableHead key={i.desktop}>{i.desktop}</TableHead>
+              {tableHead.map((label) => (
+                <TableHead key={label}>{label}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* {isLoading && <p>Loading...</p>} */}
-            {records?.length ? (
+            {records.length ? (
               records.map((record) => (
                 <TableRow key={record.id}>
                   <TableCell>{record.foodName}</TableCell>
@@ -130,31 +150,44 @@ export default function HistoryTable({
                   <TableCell>{record.fats}</TableCell>
                   <TableCell>{record.calories}</TableCell>
                   <TableCell>
-                    <Link href={`/dashboard/edit/${record.id}`}>
-                      <FiEdit />
-                    </Link>
+                    <Button asChild variant="ghost" size="icon">
+                      <Link
+                        href={`/dashboard/edit/${record.id}`}
+                        aria-label={`Edit ${record.foodName}`}
+                      >
+                        <FiEdit />
+                      </Link>
+                    </Button>
                   </TableCell>
                   <TableCell>
                     <Dialog>
-                      <DialogTrigger>
-                        <FiTrash2 />
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Delete ${record.foodName}`}
+                        >
+                          <FiTrash2 />
+                        </Button>
                       </DialogTrigger>
                       <DialogContent>
-                        <div className="flex flex-col items-center gap-6">
-                          <p className="font-bold">
-                            Do you want to delete this record?
-                          </p>
-                          <div>{record.foodName}</div>
-                          <div className="flex justify-center gap-5">
-                            <Button
-                              asChild
-                              className="bg-slate-500"
-                              onClick={() => handleDelete(record.id)}
-                            >
-                              <DialogClose>Yes</DialogClose>
-                            </Button>
-                            <DialogClose>No</DialogClose>
-                          </div>
+                        <DialogHeader>
+                          <DialogTitle>Delete this record?</DialogTitle>
+                          <DialogDescription>
+                            This will remove {record.foodName} from your history.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex justify-center gap-5">
+                          <Button
+                            variant="destructive"
+                            onClick={() => handleDelete(record.id)}
+                            disabled={deletingId === record.id}
+                          >
+                            {deletingId === record.id ? "Deleting..." : "Yes"}
+                          </Button>
+                          <DialogClose asChild>
+                            <Button variant="secondary">No</Button>
+                          </DialogClose>
                         </div>
                       </DialogContent>
                     </Dialog>
@@ -163,32 +196,34 @@ export default function HistoryTable({
               ))
             ) : (
               <TableRow>
-                <TableCell>No Records</TableCell>
+                <TableCell colSpan={tableHead.length}>No Records</TableCell>
               </TableRow>
             )}
-            {records?.length ? (
+            {records.length ? (
               <TableRow>
                 <TableCell className="font-bold">Total</TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records!.reduce((acc, curr) => acc + curr.protein, 0),
+                    records.reduce((acc, curr) => acc + curr.protein, 0),
                   )}
                 </TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records!.reduce((acc, curr) => acc + curr.carbs, 0),
+                    records.reduce((acc, curr) => acc + curr.carbs, 0),
                   )}
                 </TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records!.reduce((acc, curr) => acc + curr.fats, 0),
+                    records.reduce((acc, curr) => acc + curr.fats, 0),
                   )}
                 </TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records!.reduce((acc, curr) => acc + curr.calories, 0),
+                    records.reduce((acc, curr) => acc + curr.calories, 0),
                   )}
                 </TableCell>
+                <TableCell />
+                <TableCell />
               </TableRow>
             ) : null}
           </TableBody>

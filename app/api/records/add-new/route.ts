@@ -1,80 +1,36 @@
 import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-
-export const foodDataRequestSchema = z.object({
-  foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
-  protein: z.coerce
-    .number()
-    .nonnegative()
-    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
-  fats: z.coerce
-    .number()
-    .nonnegative()
-    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
-
-  carbs: z.coerce
-    .number()
-    .nonnegative()
-    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
-  calories: z.coerce
-    .number()
-    .nonnegative()
-    .multipleOf(0.01, { message: "Maximum 2 decimal place only" }),
-  foodSize: z.coerce
-    .number()
-    .positive()
-    .int({ message: "Interger value only" }),
-  intakeDate: z.coerce.string().datetime(),
-  // .refine(
-  //   (str) => {
-  //     +str.slice(0, 2) <= 12;
-  //   },
-  //   { message: `Month error` }
-  // )
-  // .refine(
-  //   (str) => {
-  //     +str.slice(3, 5) <= 31;
-  //   },
-  //   { message: `Day error` }
-  // ),
-});
+import { getCurrentUserId } from "@/lib/auth-user";
+import {
+  serverErrorResponse,
+  unauthorizedResponse,
+  validationErrorResponse,
+} from "@/lib/api-response";
+import { buildRecordCreateData, foodDataRequestSchema } from "@/lib/records";
+import { reportError } from "@/lib/error-report";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.email)
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return unauthorizedResponse();
+    }
 
     const reqBody = await req.json();
-
-    const { foodName, protein, fats, carbs, calories, foodSize, intakeDate } =
-      foodDataRequestSchema.parse(reqBody);
-
-    // const { foodName, protein, fats, carbs, calories, foodSize, intakeTime } =
-    //   reqBody;
-
-    const getUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
+    const recordInput = foodDataRequestSchema.parse(reqBody);
 
     const newRecord = await prisma.record.create({
-      data: {
-        foodName,
-        protein,
-        fats,
-        carbs,
-        calories,
-        foodSize,
-        userId: getUser!.id,
-        intakeDate,
-      },
+      data: buildRecordCreateData(recordInput, userId),
     });
 
-    return NextResponse.json(newRecord);
-  } catch (error: any) {
-    console.log(error);
-    return NextResponse.json({ message: error.message }, { status: 400 });
+    return NextResponse.json(newRecord, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return validationErrorResponse(error);
+    }
+
+    reportError(error, "records.add-new.POST");
+    return serverErrorResponse();
   }
 }

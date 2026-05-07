@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -10,16 +9,8 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-type FormInputs = {
-  email: string;
-  password: string;
-};
+import { CredentialsInput, credentialsSchema } from "@/lib/auth-schemas";
+import { normalizeAuthError } from "@/lib/auth-error";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,82 +20,64 @@ const LoginForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(formSchema),
+  } = useForm<CredentialsInput>({
+    resolver: zodResolver(credentialsSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = async (data: FormInputs) => {
+  const onSubmit = async (data: CredentialsInput) => {
     setIsLoading(true);
-    const res = await signIn("credentials", { ...data, redirect: false });
 
-    if (res?.error) {
-      toast({ title: "Login Error", description: res.error });
-      setIsLoading(false);
-    } else {
-      toast({ description: "Login successfully!!" });
+    try {
+      const res = await signIn("credentials", { ...data, redirect: false });
+
+      if (res?.error) {
+        const msg = await normalizeAuthError(res.error);
+        toast({ description: msg, variant: "destructive" });
+        return;
+      }
+
+      toast({ description: "Login successfully!" });
       router.push("/dashboard");
+      router.refresh();
+    } catch (error) {
+      const msg = await normalizeAuthError(error);
+      toast({ description: msg, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <>
-      {/* <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col justify-center gap-5"
-      >
-        <div className="space-y-1 ">
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div className="grid gap-4">
+        <div className="grid gap-1">
           <Label htmlFor="email">Email</Label>
           <Input
-            placeholder="ex: aloha@qmail.com"
+            placeholder="Test email: aloha@qmail.com"
             type="email"
             id="email"
             {...register("email")}
           />
-          {errors.email && (
-            <p className="text-red-500 ">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="text-red-500 ">{errors.email.message}</p>}
         </div>
-        <div className="space-y-1 ">
+        <div className="grid gap-1">
           <Label htmlFor="password">Password</Label>
-          <Input type="password" id="password" {...register("password")} />
+          <Input
+            id="password"
+            placeholder="Test password: 111111"
+            type="password"
+            {...register("password")}
+          />
           {errors.password && (
             <p className="text-red-500 ">{errors.password.message}</p>
           )}
         </div>
-        <Button className="w-full mt-5" type="submit" disabled={isLoading}>
-          Login
-        </Button>
-      </form> */}
-      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid gap-4">
-          <div className="grid gap-1">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              placeholder="Test email: aloha@qmail.com"
-              type="email"
-              id="email"
-              {...register("email")}
-            />
-          </div>
-          <div className="grid gap-1">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              placeholder="Test password: 111111"
-              type="password"
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-red-500 ">{errors.password.message}</p>
-            )}
-          </div>
-        </div>
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          Login
-        </Button>
-      </form>
-    </>
+      </div>
+      <Button className="w-full" type="submit" disabled={isLoading}>
+        {isLoading ? "Logging in..." : "Login"}
+      </Button>
+    </form>
   );
 };
 

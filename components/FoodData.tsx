@@ -1,20 +1,11 @@
 "use client";
 
-import {
-  ChangeEvent,
-  FormEvent,
-  JSX,
-  SVGProps,
-  Suspense,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { z } from "zod";
 import { FetchedFoodData } from "@/app";
-import { SyncLoader } from "react-spinners";
 import ImportedFoodCard from "./ImportedFoodCard";
 import AddNewRecordForm from "./AddNewRecordForm";
 import { useAppSelector } from "@/app/rtk/store";
@@ -26,6 +17,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "./ui/pagination";
+import { useToast } from "@/hooks/use-toast";
+import {
+  buildOpenFoodFactsSearchUrl,
+  hasNextFoodSearchPage,
+} from "@/lib/food-data";
+import { reportError } from "@/lib/error-report";
 
 export const foodInputSchema = z.object({
   foodName: z.string().min(3, { message: "Minimum length of Food Name is 3" }),
@@ -37,7 +34,6 @@ export const foodInputSchema = z.object({
     .number()
     .nonnegative()
     .multipleOf(0.01, { message: "Up to 2 decimal place" }),
-
   carbs: z.coerce
     .number()
     .nonnegative()
@@ -60,23 +56,37 @@ const FoodData = () => {
   const [firstRender, setFirstRender] = useState(true);
   const [searchinput, setSearchinput] = useState("");
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState<number>(0);
-  const [data, setData] = useState<FetchedFoodData | undefined>();
+  const [searchData, setSearchData] = useState<FetchedFoodData | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [isImported, setIsImported] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const { toast } = useToast();
+
+  const hasNextPage = hasNextFoodSearchPage(searchData);
 
   const getFoodData = async (searchTerm: string, currentPage: number) => {
     setIsLoading(true);
+    setSearchError("");
+
     try {
       const res = await fetch(
-        `https://world.openfoodfacts.org/cgi/search.pl?action=process&json=true&search_terms=${searchTerm}&page=${currentPage}`,
+        buildOpenFoodFactsSearchUrl(searchTerm, currentPage),
       );
-      if (res.ok) {
-        setData(await res.json());
-        setIsLoading(false);
+
+      if (!res.ok) {
+        throw new Error("Search failed");
       }
+
+      setSearchData(await res.json());
     } catch (error) {
-      console.log(error);
+      reportError(error, "FoodData.getFoodData");
+      setSearchData(undefined);
+      setSearchError("Unable to fetch food data right now. Please try again.");
+      toast({
+        description: "Unable to fetch food data right now. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -87,7 +97,8 @@ const FoodData = () => {
 
   const handleSearchClick = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setData(undefined);
+    setSearchData(undefined);
+    setPage(1);
     getFoodData(searchinput, 1);
   };
 
@@ -96,16 +107,14 @@ const FoodData = () => {
   };
 
   const handlePrevClick = () => {
-    setPage((page) => page - 1);
+    if (page <= 1 || isLoading) return;
+    setPage((currentPage) => currentPage - 1);
   };
 
   const handleNextClick = () => {
-    setPage((page) => page + 1);
+    if (isLoading || !hasNextPage) return;
+    setPage((currentPage) => currentPage + 1);
   };
-
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
 
   useEffect(() => {
     firstRender ? setFirstRender(false) : getFoodData(searchinput, page);
@@ -114,9 +123,8 @@ const FoodData = () => {
 
   useEffect(() => {
     scrollToTop();
-    data && setPageCount(data.page_count);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [searchData]);
 
   return (
     <>
@@ -124,73 +132,60 @@ const FoodData = () => {
         <AddNewRecordForm item={selector} />
       ) : (
         <div>
-          <p className="mt-5 text-xl text-center">
+          <p className="mt-5 text-center text-xl">
             {session ? "Choose from food data" : "Food Search"}
           </p>
 
           <div className="mx-auto my-8">
             <form
               onSubmit={handleSearchClick}
-              className="flex max-w-sm gap-2 mx-auto"
+              className="mx-auto flex max-w-sm gap-2"
             >
               <Input type="text" onChange={handleInputChange} />
-              <Button disabled={isLoading || searchinput === ""} type="submit">
-                Search
+              <Button
+                disabled={isLoading || searchinput.trim() === ""}
+                type="submit"
+              >
+                {isLoading ? "Searching..." : "Search"}
               </Button>
             </form>
           </div>
-          {!isLoading && !data && (
+          {!isLoading && !searchData && !searchError && (
             <p className="flex items-center justify-center pt-10">
               Search result will appear here
             </p>
           )}
+          {!isLoading && searchError && (
+            <p className="flex items-center justify-center pt-10 text-red-500">
+              {searchError}
+            </p>
+          )}
           {isLoading && <Loading />}
 
-          {/* <div className="flex flex-col items-center justify-center gap-6 md:grid md:grid-cols-4 md:justify-items-center"> */}
           <div className="grid grid-cols-1 gap-6 px-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {data &&
-              data.products.map((item) => (
+            {searchData &&
+              searchData.products.map((item) => (
                 <ImportedFoodCard
                   key={item._id}
                   item={item}
-                  setData={setData}
+                  setData={setSearchData}
                   setIsImported={setIsImported}
                 />
               ))}
           </div>
           <div className="flex justify-center gap-2 py-5">
-            {/* <Button
-              className={`bg-slate-500 text-white ${!data && `hidden`}`}
-              onClick={handlePrevClick}
-              disabled={isLoading || page <= 1}
-            >
-              ←
-            </Button>
-            <Button
-              className={`bg-slate-500 text-white ${!data && `hidden`}`}
-              onClick={handleNextClick}
-              disabled={isLoading || pageCount !== 24}
-            >
-              →
-            </Button> */}
-            {data && (
+            {searchData && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      className="cursor-pointer"
+                      className={`cursor-pointer ${page <= 1 || isLoading ? "pointer-events-none opacity-50" : ""}`}
                       onClick={handlePrevClick}
                     />
                   </PaginationItem>
-                  {/* <PaginationItem>
-                  <PaginationLink href="#">1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem> */}
                   <PaginationItem>
                     <PaginationNext
-                      className="cursor-pointer"
+                      className={`cursor-pointer ${isLoading || !hasNextPage ? "pointer-events-none opacity-50" : ""}`}
                       onClick={handleNextClick}
                     />
                   </PaginationItem>
