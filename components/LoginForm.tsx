@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { CredentialsInput, credentialsSchema } from "@/lib/auth-schemas";
+import { normalizeAuthError } from "@/lib/auth-error";
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,17 +32,17 @@ const LoginForm = () => {
       const res = await signIn("credentials", { ...data, redirect: false });
 
       if (res?.error) {
-        toast({
-          title: "Login Error",
-          description: res.error,
-          variant: "destructive",
-        });
+        const msg = await normalizeAuthError(res.error);
+        toast({ description: msg, variant: "destructive" });
         return;
       }
 
       toast({ description: "Login successfully!" });
       router.push("/dashboard");
       router.refresh();
+    } catch (error) {
+      const msg = await normalizeAuthError(error);
+      toast({ description: msg, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }

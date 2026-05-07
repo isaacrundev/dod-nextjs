@@ -89,7 +89,6 @@ describe("LoginForm behavior", () => {
     await waitFor(() => {
       expect(mockToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: "Login Error",
           description: "Incorrect username/password",
           variant: "destructive",
         }),

@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { getApiErrorMessage } from "@/lib/api-error";
+import { normalizeAuthError } from "@/lib/auth-error";
 import { SignupFormInput, signupFormSchema } from "@/lib/auth-schemas";
 import { reportError } from "@/lib/error-report";
 
@@ -39,10 +39,8 @@ const SignupForm = () => {
       });
 
       if (!res.ok) {
-        toast({
-          description: await getApiErrorMessage(res, "Sign up failed."),
-          variant: "destructive",
-        });
+        const msg = await normalizeAuthError(res);
+        toast({ description: msg, variant: "destructive" });
         return;
       }
 
@@ -56,10 +54,8 @@ const SignupForm = () => {
       router.refresh();
     } catch (error) {
       reportError(error, "SignupForm.onSubmit");
-      toast({
-        description: "Unable to sign up right now. Please try again later.",
-        variant: "destructive",
-      });
+      const msg = await normalizeAuthError(error);
+      toast({ description: msg, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
