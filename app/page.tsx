@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <section className="w-full bg-gradient-to-r from-[#1E40AF] to-[#3B82F6] py-12 text-white md:py-24 lg:py-32">
-        <div className="container space-y-6 px-4 md:space-y-10 md:px-6">
+        <div className="mx-auto w-full max-w-[1400px] space-y-6 px-4 md:space-y-10 md:px-6">
           <div className="grid gap-4 md:gap-6 lg:grid-cols-2 lg:gap-12 xl:gap-16">
             <div className="space-y-4 md:space-y-6">
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl xl:text-7xl">
@@ -44,7 +44,7 @@ export default function Home() {
         </div>
       </section>
       <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container space-y-6 px-4 md:space-y-10 md:px-6">
+        <div className="mx-auto w-full max-w-[1400px] space-y-6 px-4 md:space-y-10 md:px-6">
           <div className="space-y-4 text-center md:space-y-6">
             <div className="inline-block rounded-full bg-[#1E40AF]/20 px-4 py-1 text-[#1E40AF]">
               Why Track Your Diet?
@@ -86,7 +86,7 @@ export default function Home() {
         </div>
       </section>
       <section className="w-full bg-gray-100 py-12 dark:bg-gray-800 md:py-24 lg:py-32">
-        <div className="container space-y-6 px-4 md:space-y-10 md:px-6">
+        <div className="mx-auto w-full max-w-[1400px] space-y-6 px-4 md:space-y-10 md:px-6">
           <div className="space-y-4 text-center md:space-y-6">
             <div className="inline-block rounded-full bg-[#1E40AF]/20 px-4 py-1 text-[#1E40AF]">
               How It Works
@@ -128,7 +128,7 @@ export default function Home() {
         </div>
       </section>
       <section className="w-full py-12 md:py-24 lg:py-32">
-        <div className="container space-y-6 px-4 md:space-y-10 md:px-6">
+        <div className="mx-auto w-full max-w-[1400px] space-y-6 px-4 md:space-y-10 md:px-6">
           <div className="space-y-4 text-center md:space-y-6">
             <div className="inline-block rounded-full bg-[#1E40AF]/20 px-4 py-1 text-[#1E40AF]">
               Get Started
