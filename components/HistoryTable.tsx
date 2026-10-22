@@ -67,12 +67,10 @@ export default function HistoryTable({
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!selectedDate) {
-      setRecords([]);
-      return;
-    }
+    if (!selectedDate) return;
 
     let mounted = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the loading flag has to flip before the fetch resolves
     setIsLoading(true);
 
     fetchHistory(getDateKey(selectedDate))
@@ -127,6 +125,9 @@ export default function HistoryTable({
     }
   };
 
+  // Empty selection renders as an empty table; no need to clear state in an effect.
+  const rows = selectedDate ? records : [];
+
   return (
     <>
       {isLoading ? (
@@ -141,8 +142,8 @@ export default function HistoryTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {records.length ? (
-              records.map((record) => (
+            {rows.length ? (
+              rows.map((record) => (
                 <TableRow key={record.id}>
                   <TableCell>{record.foodName}</TableCell>
                   <TableCell>{record.protein}</TableCell>
@@ -199,27 +200,27 @@ export default function HistoryTable({
                 <TableCell colSpan={tableHead.length}>No Records</TableCell>
               </TableRow>
             )}
-            {records.length ? (
+            {rows.length ? (
               <TableRow>
                 <TableCell className="font-bold">Total</TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records.reduce((acc, curr) => acc + curr.protein, 0),
+                    rows.reduce((acc, curr) => acc + curr.protein, 0),
                   )}
                 </TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records.reduce((acc, curr) => acc + curr.carbs, 0),
+                    rows.reduce((acc, curr) => acc + curr.carbs, 0),
                   )}
                 </TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records.reduce((acc, curr) => acc + curr.fats, 0),
+                    rows.reduce((acc, curr) => acc + curr.fats, 0),
                   )}
                 </TableCell>
                 <TableCell className="font-bold">
                   {roundToSecondPlace(
-                    records.reduce((acc, curr) => acc + curr.calories, 0),
+                    rows.reduce((acc, curr) => acc + curr.calories, 0),
                   )}
                 </TableCell>
                 <TableCell />

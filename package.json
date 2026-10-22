@@ -36,8 +36,8 @@
     "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
     "dayjs": "^1.11.20",
-    "eslint": "8.44.0",
-    "eslint-config-next": "13.4.8",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.2",
     "lucide-react": "^0.258.0",
     "next": "^16.3.8",
     "next-auth": "beta",
@@ -70,7 +70,6 @@
   "overrides": {
     "tar": "^7.5.22",
     "picomatch": "^4.0.4",
-    "brace-expansion": "^5.0.7",
     "sharp": "^0.35.0",
     "@tootallnate/once": "^3.0.1",
     "undici": "^6.27.0",
