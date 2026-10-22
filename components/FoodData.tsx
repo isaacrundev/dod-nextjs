@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
@@ -53,7 +53,7 @@ export type FoodInputSchema = z.infer<typeof foodInputSchema>;
 const FoodData = () => {
   const { data: session } = useSession();
   const selector = useAppSelector((state) => state.importedFoodReducer);
-  const [firstRender, setFirstRender] = useState(true);
+  const firstRender = useRef(true);
   const [searchinput, setSearchinput] = useState("");
   const [page, setPage] = useState(1);
   const [searchData, setSearchData] = useState<FetchedFoodData | undefined>();
@@ -117,13 +117,17 @@ const FoodData = () => {
   };
 
   useEffect(() => {
-    firstRender ? setFirstRender(false) : getFoodData(searchinput, page);
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+
+    getFoodData(searchinput, page);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   useEffect(() => {
     scrollToTop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchData]);
 
   return (

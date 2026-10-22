@@ -2,7 +2,7 @@
 
 import { Datum, ResponsiveLine } from "@nivo/line";
 import { useQuery } from "@tanstack/react-query";
-import { ClassAttributes, HTMLAttributes, JSX, useEffect, useState } from "react";
+import { ClassAttributes, HTMLAttributes, JSX, useMemo } from "react";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { formatMonthDay, getDateKey, getLastNDateKeys } from "@/lib/date";
 
@@ -69,19 +69,18 @@ export default function LineChart(
     ClassAttributes<HTMLDivElement> &
     HTMLAttributes<HTMLDivElement>,
 ) {
-  const [chartData, setChartData] = useState<Datum[]>();
   const { data: weeklyData } = useQuery({
     queryKey: ["getWeekly"],
     queryFn: fetchWeekly,
   });
 
-  useEffect(() => {
-    if (weeklyData) {
-      const processedData = processCaloriesData(weeklyData);
-      const formattedData = formatDataForChart(processedData);
-      setChartData(formattedData);
-    }
-  }, [weeklyData]);
+  const chartData = useMemo(
+    () =>
+      weeklyData
+        ? formatDataForChart(processCaloriesData(weeklyData))
+        : undefined,
+    [weeklyData],
+  );
 
   return chartData ? (
     <div {...props}>
